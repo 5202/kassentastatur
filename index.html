@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="de"><head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Belegungspläne Kassentastatur</title>
+<style>
+  :root{
+    --plate:#15181b;
+    --plate-hi:#22272b;
+    --rail:#6e767c;
+    --rail-dim:#414a50;
+    --led:#4fe05a;
+    --ink-inv:#e6e8ea;
+    --mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+    --sans: "Helvetica Neue", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  html{-webkit-text-size-adjust:100%}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:#0a0c0d;
+    color:var(--ink-inv);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.55;
+    padding:40px 20px 60px;
+  }
+  .wrap{max-width:760px;margin:0 auto}
+
+  header{border-bottom:1px solid #262b2f;padding-bottom:16px;margin-bottom:28px}
+  h1{font-size:21px;font-weight:600;letter-spacing:-.01em;margin:0}
+  .sub{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--rail);margin-top:6px;
+  }
+
+  .list{display:flex;flex-direction:column;gap:14px}
+  a.card{
+    display:flex;align-items:center;gap:18px;
+    background:linear-gradient(180deg,var(--plate-hi),var(--plate));
+    border:1px solid #2c3237;border-radius:8px;
+    padding:18px 20px;text-decoration:none;color:inherit;
+    transition:border-color .12s ease, transform .12s ease;
+  }
+  a.card:hover{border-color:var(--led);transform:translateY(-1px)}
+  a.card:focus-visible{outline:2px solid var(--led);outline-offset:3px}
+
+  .chip{
+    flex:none;width:64px;height:52px;border-radius:4px;
+    background:#0d0f11;box-shadow:inset 0 0 0 1px #23282c;
+    display:grid;gap:2px;padding:6px;
+  }
+  .chip.c84{grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr)}
+  .chip.c128{grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(4,1fr)}
+  .chip i{background:#3a4147;border-radius:1px}
+  .chip i.on{background:var(--rail)}
+
+  .card b{display:block;font-size:16px;font-weight:600;letter-spacing:-.01em}
+  .card .meta{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--rail);margin-top:3px;
+  }
+  .card .go{margin-left:auto;font-family:var(--mono);font-size:18px;color:var(--rail-dim)}
+  a.card:hover .go{color:var(--led)}
+
+  .note{
+    margin-top:30px;padding-top:18px;border-top:1px solid #262b2f;
+    color:var(--rail);font-size:13px;
+  }
+  .note b{color:var(--ink-inv);font-weight:600}
+  .note p{margin:0 0 10px}
+  .note p:last-child{margin-bottom:0}
+</style>
+</head><body>
+<div class="wrap">
+  <header>
+    <h1>Belegungspläne Kassentastatur</h1>
+    <div class="sub">Planungsstand · zum Bearbeiten im Browser</div>
+  </header>
+
+  <div class="list">
+    <a class="card" href="mci-84.html">
+      <span class="chip c84" aria-hidden="true">
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+      </span>
+      <span>
+        <b>MCI 84</b>
+        <span class="meta">7 × 12 · 84 Positionen · Ist-Zustand</span>
+      </span>
+      <span class="go">→</span>
+    </a>
+
+    <a class="card" href="mci-128.html">
+      <span class="chip c128" aria-hidden="true">
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i>
+        <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+        <i></i><i></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
+      </span>
+      <span>
+        <b>MCI 128</b>
+        <span class="meta">8 × 16 · 128 Positionen · Übernahme aus der 84</span>
+      </span>
+      <span class="go">→</span>
+    </a>
+  </div>
+
+  <div class="note">
+    <p><b>Bedienung.</b> Taste antippen zum Bearbeiten. Am Rechner ziehen zum Verschieben, am Handy lange auf die Taste tippen und dann die Zielposition antippen. Rückgängig mit ⌘Z oder dem Button.</p>
+    <p><b>Speichern.</b> Der Browser merkt sich Änderungen auf dem eigenen Gerät. Zum Austauschen „JSON sichern“ und die Datei verschicken, der andere lädt sie über „JSON laden“. „Weitergabe-HTML“ erzeugt eine eigenständige Seite, die den Stand schon enthält.</p>
+    <p>Jeder Plan speichert für sich. Änderungen auf einem Gerät erscheinen nicht automatisch auf einem anderen.</p>
+  </div>
+</div>
+</body></html>

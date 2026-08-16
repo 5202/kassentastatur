@@ -1,0 +1,801 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tastaturmatrix 8 × 16 — Belegungsplan Kasse MCI 128</title>
+<style>
+  :root{
+    --plate:#15181b;
+    --plate-hi:#22272b;
+    --rail:#6e767c;
+    --rail-dim:#414a50;
+    --led:#4fe05a;
+    --well:#0d0f11;
+
+    --cap-grau:#d8d9d4;   /* blanko / unbelegt-weiss */
+    --cap-blau:#7b8fd0;
+    --cap-gruen:#9dc48b;
+    --cap-gelb:#e2dc72;
+    --cap-beige:#dcc9a6;
+    --cap-rot:#e08e94;
+    --cap-rosa:#e9a9c6;
+    --cap-orange:#e2996f;
+    --cap-obst:#c9a3dc;
+    --cap-gemuese:#8ecfb4;
+    --cap-schwarz:#1e2124;
+    --cap-weiss:#eceded;
+
+    --ink:#1a1c1e;
+    --ink-inv:#e6e8ea;
+    --mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+    --sans: "Helvetica Neue", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  html{-webkit-text-size-adjust:100%}
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:#0a0c0d;
+    color:var(--ink-inv);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.5;
+    padding:28px 20px 60px;
+  }
+  .wrap{max-width:1440px;margin:0 auto}
+
+  /* ---------- Kopf ---------- */
+  header{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;
+    border-bottom:1px solid #262b2f;padding-bottom:14px;margin-bottom:22px;
+  }
+  h1{
+    font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0;
+  }
+  .sub{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--rail);margin-top:4px;
+  }
+  .counts{display:flex;gap:22px;font-family:var(--mono);font-size:11px}
+  .counts b{display:block;font-size:22px;font-weight:500;letter-spacing:-.02em;line-height:1.1}
+  .counts span{letter-spacing:.12em;text-transform:uppercase;color:var(--rail)}
+  .c-frei b{color:var(--led)}
+
+  /* ---------- Platte ---------- */
+  .plate{
+    background:linear-gradient(180deg,var(--plate-hi),var(--plate));
+    border:1px solid #2c3237;border-radius:8px;
+    padding:14px 16px 16px;
+    overflow-x:auto;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:26px repeat(16, minmax(62px,1fr));
+    grid-auto-rows:62px;
+    gap:5px;
+    min-width:1120px;
+  }
+  .rail{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+    color:var(--rail-dim);display:flex;align-items:center;justify-content:center;
+    user-select:none;
+  }
+  .rail.top{height:20px;align-self:end;padding-bottom:4px}
+  .grid .rail.top{grid-row:1}
+
+  /* ---------- Tasten ---------- */
+  .key{
+    position:relative;border:0;padding:5px 6px;
+    border-radius:4px;cursor:pointer;
+    font-family:var(--sans);font-size:12px;font-weight:600;
+    line-height:1.15;color:var(--ink);
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    box-shadow:inset 0 -3px 0 rgba(0,0,0,.22), 0 1px 2px rgba(0,0,0,.5);
+    transition:transform .08s ease, box-shadow .08s ease;
+    word-break:break-word;hyphens:auto;
+    touch-action:manipulation;
+    -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+  }
+  .key:hover{transform:translateY(-1px)}
+  .key:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.22)}
+  .key:focus-visible{outline:2px solid var(--led);outline-offset:2px}
+  .key.dark{color:var(--ink-inv)}
+
+  /* leere Position: kein Cap, nur die Mulde */
+  .key.frei{
+    background:var(--well);
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.85), inset 0 0 0 1px #23282c;
+    color:var(--rail-dim);
+    font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.1em;
+  }
+  .key.frei:hover{box-shadow:inset 0 2px 5px rgba(0,0,0,.85), inset 0 0 0 1px var(--led)}
+
+  /* Verschieben per Maus */
+  .key[draggable="true"]{cursor:grab}
+  .key[draggable="true"]:active{cursor:grabbing}
+  .key.dragging{opacity:.35}
+  .key.over{outline:2px solid var(--led);outline-offset:-2px}
+  .key.carry{outline:2px dashed var(--led);outline-offset:-3px;opacity:.55}
+  .key.flex::after{
+    content:"";position:absolute;top:4px;right:4px;
+    width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,.35);
+  }
+  .code{
+    position:absolute;bottom:2px;left:4px;
+    font-family:var(--mono);font-size:8px;font-weight:400;
+    opacity:.34;letter-spacing:.04em;
+  }
+
+  /* ---------- Legende ---------- */
+  .legend{
+    display:flex;flex-wrap:wrap;gap:6px 8px;margin:18px 0 0;
+    font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .legend button{
+    display:flex;align-items:center;gap:6px;background:#181c1f;color:var(--rail);
+    border:1px solid #272d31;border-radius:3px;padding:5px 9px;cursor:pointer;
+    font:inherit;letter-spacing:.08em;
+  }
+  .legend button[aria-pressed="true"]{border-color:var(--led);color:var(--ink-inv)}
+  .sw{width:11px;height:11px;border-radius:2px;flex:none}
+
+  /* ---------- Editor ---------- */
+  .editor{
+    margin-top:22px;border:1px solid #262b2f;border-radius:6px;
+    background:#111417;padding:16px 18px;
+  }
+  .editor h2{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--rail);margin:0 0 12px;font-weight:400;
+  }
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{
+    font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rail-dim);
+  }
+  input[type=text],select{
+    background:#0b0e10;color:var(--ink-inv);border:1px solid #2c3237;border-radius:3px;
+    padding:7px 9px;font-family:var(--sans);font-size:13px;min-width:150px;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--led)}
+  .btn{
+    background:#1d2226;color:var(--ink-inv);border:1px solid #333a3f;border-radius:3px;
+    padding:8px 14px;cursor:pointer;font-family:var(--mono);font-size:11px;
+    letter-spacing:.1em;text-transform:uppercase;
+  }
+  .btn:hover{border-color:var(--led)}
+  .btn.ghost{background:transparent;color:var(--rail)}
+  .hint{color:var(--rail-dim);font-size:12px;margin:10px 0 0}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;align-items:center}
+  .status{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    color:var(--led);margin-left:6px;
+  }
+
+
+  /* ---------- Handy / kleine Schirme ---------- */
+  @media (max-width:820px){
+    body{padding:14px 10px 44px;font-size:14px}
+    h1{font-size:16px}
+    header{gap:12px;padding-bottom:10px;margin-bottom:14px}
+    .counts{gap:14px}
+    .counts b{font-size:18px}
+    .plate{padding:10px;border-radius:6px}
+    .grid{
+      grid-template-columns:20px repeat(16, 56px);
+      grid-auto-rows:52px;
+      gap:4px;
+      min-width:0;
+    }
+    .key{font-size:10.5px;padding:3px;border-radius:3px}
+    .code{font-size:7px;bottom:1px;left:2px}
+    .legend{gap:5px 6px}
+    .legend button{padding:7px 8px}
+    .editor{padding:12px 13px}
+    .row{gap:10px}
+    .field{flex:1 1 46%}
+    /* 16px verhindert, dass iOS beim Antippen hineinzoomt */
+    input[type=text],select{font-size:16px;min-width:0;width:100%}
+    .btn{padding:11px 13px}
+    .tools{gap:6px}
+  }
+
+  @media print{
+    body{background:#fff;color:#000;padding:0}
+    .editor,.tools,.hint,.legend button{display:none}
+    .plate{background:#fff;border-color:#999}
+    .key{box-shadow:inset 0 0 0 1px #999;color:#000}
+    .key.frei{background:#f2f2f2;color:#999}
+  }
+</style>
+
+</head><body><div class="wrap">
+  <header>
+    <div>
+      <h1>Belegungsplan Kassentastatur — MCI 128</h1>
+      <div class="sub" id="dims">Matrix 8 × 16 · 128 Positionen · 124 Tasten</div>
+    </div>
+    <div class="counts">
+      <div><b id="n-belegt">122</b><span>belegt</span></div>
+      <div><b id="n-flex">2</b><span>flexibel</span></div>
+      <div class="c-frei"><b id="n-frei">4</b><span>frei</span></div>
+    </div>
+  </header>
+
+  <div class="plate"><div class="grid" id="grid"></div></div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="editor">
+    <h2 id="ed-title">Keine Taste gewählt</h2>
+    <div class="row">
+      <div class="field">
+        <label for="f-label">Beschriftung</label>
+        <input type="text" id="f-label" placeholder="z. B. Obst/Gemüse" disabled="" value="">
+      </div>
+      <div class="field">
+        <label for="f-cat">Farbe / Kategorie</label>
+        <select id="f-cat" disabled=""></select>
+      </div>
+      <div class="field">
+        <label for="f-span">Tastengröße</label>
+        <select id="f-span" disabled="">
+          <option value="1x1">1 × 1 — Einzeltaste</option>
+          <option value="1x2">1 × 2 — Doppel, quer</option>
+          <option value="2x1">2 × 1 — Doppel, hoch</option>
+          <option value="2x2">2 × 2 — Vierfachtaste</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-move">Verschieben</label>
+        <button class="btn" id="f-move" disabled>↕ Aufnehmen</button>
+      </div>
+      <div class="field">
+        <label for="f-state">Status</label>
+        <select id="f-state" disabled="">
+          <option value="belegt">belegt</option>
+          <option value="flex">flexibel — umbelegbar</option>
+          <option value="frei">frei — unbelegt</option>
+        </select>
+      </div>
+    </div>
+    <p class="hint">Anklicken zum Bearbeiten. <b>Am Rechner</b> ziehen zum Verschieben, <b>am Handy</b> lange auf die Taste tippen (oder „Aufnehmen“) und dann die Zielposition antippen. Landet die Taste auf einer gleich großen Nachbarin, tauschen beide den Platz; sonst wird das Ziel überschrieben und die alte Position wird frei. Rückgängig mit ⌘Z bzw. Strg&nbsp;+&nbsp;Z.</p>
+  </div>
+
+  <div class="tools">
+    <button class="btn" id="t-undo">↶ Rückgängig</button>
+    <button class="btn" id="t-export">JSON sichern</button>
+    <button class="btn" id="t-share">Weitergabe-HTML</button>
+    <button class="btn" id="t-import">JSON laden</button>
+    <button class="btn" id="t-print">Drucken</button>
+    <button class="btn ghost" id="t-blank">Leere Vorlage</button>
+    <button class="btn ghost" id="t-reset">MCI-84-Übernahme</button>
+    <span class="status" id="t-status"></span>
+  </div>
+
+  <p class="hint">Der Browser merkt sich Änderungen automatisch. <b>Weitergabe-HTML</b> erzeugt eine eigenständige Datei, die den aktuellen Stand bereits enthält — die kann man verschicken, der Empfänger öffnet sie im Browser und arbeitet direkt darin weiter. <b>JSON sichern</b> legt zusätzlich eine reine Datensicherung an.</p>
+</div>
+
+<script id="app">
+const ROWS = 8, COLS = 16;
+const ROWL = "ABCDEFGH";
+
+const CATS = {
+  blanko:  {n:"Blanko",        c:"var(--cap-grau)"},
+  weiss:   {n:"Weiß / Funktion", c:"var(--cap-weiss)"},
+  blau:    {n:"Blau / System",  c:"var(--cap-blau)"},
+  gruen:   {n:"Grün / Ablauf",  c:"var(--cap-gruen)"},
+  gelb:    {n:"Gelb / Eingabe", c:"var(--cap-gelb)"},
+  beige:   {n:"Beige / Warengruppe", c:"var(--cap-beige)"},
+  obst:    {n:"Obst",           c:"var(--cap-obst)"},
+  gemuese: {n:"Gemüse",         c:"var(--cap-gemuese)"},
+  rot:     {n:"Rot / Zahlung",  c:"var(--cap-rot)"},
+  rosa:    {n:"Rosa / Rabatt",  c:"var(--cap-rosa)"},
+  orange:  {n:"Orange / Aktion", c:"var(--cap-orange)"},
+  schwarz: {n:"Schwarz / Ziffern", c:"var(--cap-schwarz)", dark:true}
+};
+
+// Übernahme aus der MCI 84 (7 × 12): Warengruppen A–C unverändert links oben.
+// Funktions- und Ziffernblock als geschlossene Einheit von D–G nach E–H und
+// um 4 Spalten nach rechts verschoben — unten rechtsbündig, Nullreihe auf der
+// Unterkante, Enter in der Ecke. Neu frei: Zeile D, A13–C16, E01–H04.
+const IST = [
+  ["A",1,"ESC","blau"],["A",2,"Obst","obst"],["A",3,"Obst","obst"],["A",4,"Obst","obst"],
+  ["A",5,"Obst","obst"],["A",6,"Obst","obst"],["A",7,"Obst","obst"],["A",8,"Obst","obst"],
+  ["A",9,"Gemüse","gemuese"],["A",10,"Gemüse","gemuese"],["A",11,"Gemüse","gemuese"],["A",12,"Gemüse","gemuese"],
+  ["A",13,"Gemüse","gemuese"],["A",14,"Gemüse","gemuese"],["A",15,"Gemüse","gemuese"],["A",16,"Gemüse","gemuese"],
+  ["B",1,"WIN","blau"],["B",2,"Obst","obst"],["B",3,"Obst","obst"],["B",4,"Obst","obst"],
+  ["B",5,"Obst","obst"],["B",6,"Obst","obst"],["B",7,"Obst","obst"],["B",8,"Obst","obst"],
+  ["B",9,"Gemüse","gemuese"],["B",10,"Gemüse","gemuese"],["B",11,"Gemüse","gemuese"],["B",12,"Gemüse","gemuese"],
+  ["B",13,"Gemüse","gemuese"],["B",14,"Gemüse","gemuese"],["B",15,"Gemüse","gemuese"],["B",16,"Gemüse","gemuese"],
+  ["C",1,"AZE","gelb"],["C",2,"Obst","obst"],["C",3,"Obst","obst"],["C",4,"Obst","obst"],
+  ["C",5,"Obst","obst"],["C",6,"Obst","obst"],["C",7,"Obst","obst"],["C",8,"Obst","obst"],
+  ["C",9,"Gemüse","gemuese"],["C",10,"Gemüse","gemuese"],["C",11,"Gemüse","gemuese"],["C",12,"Gemüse","gemuese"],
+  ["C",13,"Gemüse","gemuese"],["C",14,"Gemüse","gemuese"],["C",15,"Gemüse","gemuese"],["C",16,"Gemüse","gemuese"],
+  ["D",1,"Fn","blau"],["D",2,"Obst","obst"],["D",3,"Obst","obst"],["D",4,"Obst","obst"],
+  ["D",5,"Obst","obst"],["D",6,"Obst","obst"],["D",7,"Obst","obst"],["D",8,"Obst","obst"],
+  ["D",9,"Gemüse","gemuese"],["D",10,"Gemüse","gemuese"],["D",11,"Gemüse","gemuese"],["D",12,"Gemüse","gemuese"],
+  ["D",13,"Gemüse","gemuese"],["D",14,"Gemüse","gemuese"],["D",15,"Gemüse","gemuese"],["D",16,"Gemüse","gemuese"],
+  ["E",1,"","blanko","frei"],["E",2,"Käse","beige"],["E",3,"7 %","beige"],["E",4,"Gutschein","weiss"],
+  ["E",5,"Aktion 7 %","gelb","flex"],["E",6,"Einzahlung","gruen"],["E",7,"10 %","rosa"],["E",8,"Storno","gruen"],
+  ["E",9,"","blanko","frei"],["E",10,"Gutschrift","weiss"],["E",11,"Tara","gruen"],["E",12,"7","schwarz"],
+  ["E",13,"8","schwarz"],["E",14,"9","schwarz"],["E",15,"C","weiss"],["E",16,"Retour −","weiss"],
+  ["F",1,"TAB","blau"],["F",2,"Brot","beige"],["F",3,"19%","beige"],["F",4,"Bon parken","gruen"],
+  ["F",5,"Aktion 19 %","gelb","flex"],["F",6,"Auszahlung","gruen"],["F",7,"15%","rosa"],["F",8,"Storno alles","gruen"],
+  ["F",9,"Kunde","gruen"],["F",10,"Zwisch. Summe","gruen"],["F",11,"Kredit","rot"],["F",12,"4","schwarz"],
+  ["F",13,"5","schwarz"],["F",14,"6","schwarz"],["F",15,"Artikel Nr.","weiss"],["F",16,"∗","weiss"],
+  ["G",1,"","blanko","frei"],["G",2,"Fleisch + Wurst","beige"],["G",3,"Pfand 7 %","beige"],["G",4,"←","weiss"],
+  ["G",5,"↑","weiss"],["G",6,"→","weiss"],["G",7,"30 %","rosa"],["G",8,"Menge","gelb"],
+  ["G",9,"EAN","gelb"],["G",10,"Bar","rot"],["G",11,"EC","rot"],["G",12,"1","schwarz"],
+  ["G",13,"2","schwarz"],["G",14,"3","schwarz"],["G",15,"Enter","weiss","belegt",2,2],["H",1,"Abmelden","gruen"],
+  ["H",2,"","blanko","frei"],["H",3,"Pfand 19 %","beige"],["H",4,"Schublade","gruen"],["H",5,"↓","weiss"],
+  ["H",6,"Menü","gruen"],["H",7,"50 %","rosa"],["H",8,"Preis","gelb"],["H",9,"Rabatt","gelb"],
+  ["H",10,"Drucken Bezahlen","weiss","belegt",2,1],["H",12,"0","schwarz"],["H",13,"00","schwarz"],["H",14,",","schwarz"]
+];
+
+let keys = [];        // {r,c,w,h,label,cat,state}
+let sel = null;
+let filter = null;
+
+// ---------- Persistenz ----------
+const LS_KEY = "kassentastatur-matrix-128-v3";
+
+// Meldung unten in der Werkzeugleiste
+let RESET_NAME = "die Übernahme aus der MCI 84";
+const SHARE_BASE = "Belegungsplan-Kasse-MCI-128";
+
+function note(msg){
+  const el = document.getElementById("t-status");
+  el.textContent = msg;
+  clearTimeout(note._t);
+  note._t = setTimeout(() => { el.textContent = ""; }, 5000);
+}
+
+// fremde/alte Daten auf das interne Format bringen
+const norm = k => ({
+  r: +k.r, c: +k.c,
+  w: +k.w || 1, h: +k.h || 1,
+  label: k.label ?? "",
+  cat: CATS[k.cat] ? k.cat : "blanko",
+  state: ["belegt","flex","frei"].includes(k.state) ? k.state : "belegt"
+});
+
+function autosave(){
+  try{
+    localStorage.setItem(LS_KEY, JSON.stringify({rows:ROWS, cols:COLS, keys}));
+  }catch(e){
+    note("Browser-Speicher nicht verfügbar — bitte per JSON sichern.");
+  }
+}
+
+const key = (r,c) => keys.find(k =>
+  r >= k.r && r < k.r + k.h && c >= k.c && c < k.c + k.w);
+
+function loadIst(){
+  keys = IST.map(([R,c,label,cat,state="belegt",w=1,h=1]) =>
+    ({r:ROWL.indexOf(R)+1, c, w, h, label, cat, state}));
+  render();
+}
+
+function loadBlank(){
+  keys = [];
+  for(let r=1;r<=ROWS;r++) for(let c=1;c<=COLS;c++)
+    keys.push({r,c,w:1,h:1,label:"",cat:"blanko",state:"frei"});
+  render();
+}
+
+function render(){
+  const g = document.getElementById("grid");
+  g.innerHTML = "";
+
+  const corner = document.createElement("div");
+  corner.className = "rail top";
+  g.appendChild(corner);
+  for(let c=1;c<=COLS;c++){
+    const d = document.createElement("div");
+    d.className = "rail top";
+    d.textContent = String(c).padStart(2,"0");
+    d.style.gridColumn = c+1;
+    g.appendChild(d);
+  }
+
+  for(let r=1;r<=ROWS;r++){
+    const d = document.createElement("div");
+    d.className = "rail";
+    d.textContent = ROWL[r-1];
+    d.style.gridRow = r+1; d.style.gridColumn = 1;
+    g.appendChild(d);
+  }
+
+  keys.forEach(k => {
+    const b = document.createElement("button");
+    const cat = CATS[k.cat] || CATS.blanko;
+    b.className = "key " + k.state + (cat.dark ? " dark" : "");
+    b.style.gridRow = `${k.r+1} / span ${k.h}`;
+    b.style.gridColumn = `${k.c+1} / span ${k.w}`;
+    if(k.state !== "frei") b.style.background = cat.c;
+    b.textContent = k.state === "frei" ? "frei" : k.label;
+
+    const code = document.createElement("span");
+    code.className = "code";
+    code.textContent = ROWL[k.r-1] + String(k.c).padStart(2,"0");
+    b.appendChild(code);
+
+    if(filter && k.cat !== filter) b.style.opacity = ".22";
+    if(k === carry) b.classList.add("carry");
+    b.onclick = e => tapKey(e, k);
+    wireDrag(b, k);
+    wireTouch(b, k);
+    g.appendChild(b);
+  });
+
+  const tally = {belegt:0, flex:0, frei:0};
+  keys.forEach(k => tally[k.state] += k.w * k.h);
+  document.getElementById("n-belegt").textContent = tally.belegt;
+  document.getElementById("n-flex").textContent   = tally.flex;
+  document.getElementById("n-frei").textContent   = tally.frei;
+  document.getElementById("dims").textContent =
+    `Matrix ${ROWS} × ${COLS} · ${ROWS*COLS} Positionen · ${keys.length} Tasten`;
+
+  autosave();
+}
+
+function select(k){
+  sel = k;
+  document.getElementById("ed-title").textContent =
+    `Position ${ROWL[k.r-1]}${String(k.c).padStart(2,"0")}` +
+    (k.w*k.h > 1 ? ` · ${k.h} × ${k.w}` : "");
+  const L=document.getElementById("f-label"), C=document.getElementById("f-cat"),
+        S=document.getElementById("f-span"), T=document.getElementById("f-state"),
+        M=document.getElementById("f-move");
+  [L,C,S,T].forEach(e => e.disabled = false);
+  L.value = k.label; C.value = k.cat; S.value = `${k.h}x${k.w}`; T.value = k.state;
+  M.disabled = k.state === "frei";
+  M.textContent = carry === k ? "✕ Abbrechen" : "↕ Aufnehmen";
+  if(!TOUCH) L.focus();
+}
+
+// ---------- Datei an den Nutzer übergeben ----------
+// Als Website läuft das über die Download-Fähigkeit der Seite,
+// als lokale Datei über einen klassischen Download-Link.
+async function deliver(name, text, mime){
+  if(typeof claude !== "undefined" && claude.use){
+    let dl = null;
+    try{ dl = await claude.use("downloads"); }catch(e){ dl = null; }
+    if(dl){
+      try{
+        await dl.save({filename:name, data:text});
+        note("Gesichert: " + name);
+      }catch(err){
+        const c = err && err.code;
+        if(c === "declined")           note("Sichern abgebrochen.");
+        else if(c === "rate_limited")  note("Kurz warten, dann nochmal.");
+        else if(c === "extension_not_enabled" || c === "rejected_extension")
+          note("HTML l\u00e4sst sich hier nicht speichern \u2014 nimm \u201eJSON sichern\u201c.");
+        else                           note("Sichern nicht m\u00f6glich (" + (c || "unbekannt") + ").");
+      }
+      return;
+    }
+  }
+  const url = URL.createObjectURL(new Blob([text], {type:mime}));
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 10000);
+  note("Gesichert: " + name);
+}
+
+// ---------- Weitergabe: eigenständige HTML-Datei mit eingebautem Stand ----------
+function shareFile(){
+  const jetzt = new Date().toLocaleString("sv").slice(0,16);   // 2026-08-16 18:30
+  const stamp = jetzt.replace(/[: ]/g,"-");                    // für den Speicherplatz
+  const dstamp = jetzt.slice(0,10) + "-" + jetzt.slice(11).replace(":","");
+  const doc = document.documentElement.cloneNode(true);
+
+  // alles leeren, was das Skript beim Öffnen selbst wieder aufbaut
+  ["grid","legend","f-cat"].forEach(id => {
+    const e = doc.querySelector("#"+id); if(e) e.innerHTML = "";
+  });
+  const stat = doc.querySelector("#t-status"); if(stat) stat.textContent = "";
+  const ed   = doc.querySelector("#ed-title"); if(ed)   ed.textContent = "Keine Taste gewählt";
+  ["f-label","f-cat","f-span","f-state","f-move"].forEach(id => {
+    const e = doc.querySelector("#"+id); if(e) e.setAttribute("disabled","");
+  });
+  const lab = doc.querySelector("#f-label"); if(lab) lab.setAttribute("value","");
+  const rst = doc.querySelector("#t-reset"); if(rst) rst.textContent = "Ausgangsstand";
+  const h1  = doc.querySelector("h1");
+  h1.textContent = h1.textContent.split(" · Stand")[0] +
+                   " · Stand " + new Date().toLocaleDateString("de-DE");
+
+  // Skript umschreiben: der jetzige Stand wird zum Ausgangszustand der Kopie
+  const sc = doc.querySelector("#app");
+  let src = sc.textContent;
+  const tup = keys.map(k => {
+    const t = [ROWL[k.r-1], k.c, k.label, k.cat];
+    if(k.state !== "belegt" || k.w > 1 || k.h > 1) t.push(k.state);
+    if(k.w > 1 || k.h > 1) t.push(k.w, k.h);
+    return JSON.stringify(t);
+  });
+  const rows = [];
+  for(let i = 0; i < tup.length; i += 4) rows.push("  " + tup.slice(i, i+4).join(","));
+  const a = src.indexOf("const IST = ["), b = src.indexOf("\n];", a);
+  src = src.slice(0, a) + "const IST = [\n" + rows.join(",\n") + src.slice(b);
+
+  // eigener Speicherplatz, damit der eingebaute Stand beim Empfänger sicher erscheint
+  src = src.replace(/const LS_KEY = "[^"]+";/,
+    'const LS_KEY = "' + LS_KEY.replace(/-\d{4}-\d\d-\d\d-\d\d-\d\d$/, "") + '-' + stamp + '";');
+  src = src.replace(/RESET_NAME = "[^"]+";/, 'RESET_NAME = "den Ausgangsstand dieser Datei";');
+  sc.textContent = src;
+
+  const name = SHARE_BASE + "_Stand-" + dstamp + ".html";
+  deliver(name, "<!doctype html>\n" + doc.outerHTML, "text/html;charset=utf-8");
+}
+
+// ---------- Verschieben per Fingertipp ----------
+// Auf Touch-Geräten gibt es kein Drag & Drop. Stattdessen: lange auf eine Taste
+// tippen (oder Button „Verschieben") nimmt sie auf, der nächste Tipp setzt sie ab.
+const TOUCH = window.matchMedia("(hover: none)").matches;
+let carry = null;        // aufgenommene Taste
+let suppressTap = false; // unterdrückt den Klick direkt nach einem langen Tippen
+
+const pos = k => ROWL[k.r-1] + String(k.c).padStart(2,"0");
+
+function pickUp(k){
+  if(!k) return;
+  if(k.state === "frei"){ note("Leere Mulden lassen sich nicht verschieben."); return; }
+  carry = k;
+  render(); select(k);
+  note(pos(k) + " aufgenommen — Zielposition antippen (nochmal drauf: Abbruch)");
+}
+
+function cancelCarry(msg){
+  if(!carry) return;
+  const k = carry; carry = null;
+  render(); select(k);
+  if(msg) note(msg);
+}
+
+function tapKey(e, k){
+  if(suppressTap){ suppressTap = false; return; }
+  if(carry){
+    const z = cellAt(e, k);
+    const c = carry;
+    if(c === k){ cancelCarry("Verschieben abgebrochen."); return; }
+    carry = null;
+    if(!moveKey(c, z.r, z.c)) render();
+    return;
+  }
+  select(k);
+}
+
+function wireTouch(b, k){
+  if(!TOUCH) return;
+  let timer = null, sx = 0, sy = 0;
+  const stop = () => { if(timer){ clearTimeout(timer); timer = null; } };
+  b.addEventListener("touchstart", e => {
+    const p = e.touches[0]; sx = p.clientX; sy = p.clientY;
+    timer = setTimeout(() => {
+      timer = null;
+      suppressTap = true;
+      setTimeout(() => { suppressTap = false; }, 700);   // hängt nicht fest
+      if(navigator.vibrate) navigator.vibrate(15);
+      pickUp(k);
+    }, 420);
+  }, {passive:true});
+  b.addEventListener("touchmove", e => {                 // Wischen = scrollen, kein Aufnehmen
+    const p = e.touches[0];
+    if(Math.abs(p.clientX - sx) > 10 || Math.abs(p.clientY - sy) > 10) stop();
+  }, {passive:true});
+  b.addEventListener("touchend", stop, {passive:true});
+  b.addEventListener("touchcancel", stop, {passive:true});
+}
+
+// ---------- Verschieben per Maus ----------
+let drag = null;   // {k, dr, dc} — dr/dc = angefasste Zelle innerhalb der Taste
+
+// Zelle unter dem Mauszeiger, auch bei mehrfeldrigen Tasten
+function cellAt(e, k){
+  const q = e.currentTarget.getBoundingClientRect();
+  const dx = Math.floor((e.clientX - q.left) / q.width  * k.w);
+  const dy = Math.floor((e.clientY - q.top)  / q.height * k.h);
+  return { r: k.r + Math.max(0, Math.min(k.h-1, dy)),
+           c: k.c + Math.max(0, Math.min(k.w-1, dx)) };
+}
+
+function wireDrag(b, k){
+  b.draggable = !TOUCH && k.state !== "frei";   // leere Mulden zieht man nicht
+  b.ondragstart = e => {
+    const z = cellAt(e, k);
+    drag = { k, dr: z.r - k.r, dc: z.c - k.c };
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", k.label || "taste");
+    b.classList.add("dragging");
+  };
+  b.ondragend   = () => { b.classList.remove("dragging"); drag = null;
+                          document.querySelectorAll(".over").forEach(x => x.classList.remove("over")); };
+  b.ondragenter = () => { if(drag) b.classList.add("over"); };
+  b.ondragleave = () => b.classList.remove("over");
+  b.ondragover  = e => { if(drag){ e.preventDefault(); e.dataTransfer.dropEffect = "move"; } };
+  b.ondrop = e => {
+    e.preventDefault();
+    b.classList.remove("over");
+    if(!drag) return;
+    const z = cellAt(e, k);
+    moveKey(drag.k, z.r - drag.dr, z.c - drag.dc);
+  };
+}
+
+// jede unbelegte Zelle wieder mit einer leeren Mulde auffüllen
+function fillFree(){
+  for(let r=1;r<=ROWS;r++) for(let c=1;c<=COLS;c++)
+    if(!key(r,c)) keys.push({r,c,w:1,h:1,label:"",cat:"blanko",state:"frei"});
+  keys.sort((a,b) => a.r-b.r || a.c-b.c);
+}
+
+function moveKey(k, r, c){
+  if(r < 1 || c < 1 || r + k.h - 1 > ROWS || c + k.w - 1 > COLS){
+    note("Passt an dieser Stelle nicht auf die Platte."); return false;
+  }
+  if(r === k.r && c === k.c) return false;
+
+  const hit = keys.filter(o => o !== k &&
+    o.r < r + k.h && o.r + o.h > r && o.c < c + k.w && o.c + o.w > c);
+
+  pushUndo();
+  const from = ROWL[k.r-1] + String(k.c).padStart(2,"0");
+  const to   = ROWL[r-1]   + String(c).padStart(2,"0");
+
+  if(hit.length === 1 && hit[0].w === k.w && hit[0].h === k.h){
+    // gleich große Taste am Ziel → tauschen
+    const o = hit[0], sr = k.r, sc = k.c;
+    k.r = r;  k.c = c;
+    o.r = sr; o.c = sc;
+    keys.sort((a,b) => a.r-b.r || a.c-b.c);
+    note(`${from} ↔ ${to} getauscht`);
+  } else {
+    const weg = hit.filter(o => o.state !== "frei");
+    keys = keys.filter(o => !hit.includes(o));
+    k.r = r; k.c = c;
+    fillFree();
+    note(weg.length
+      ? `${from} → ${to} · ${weg.length} belegte Taste(n) überschrieben — ⌘Z macht das rückgängig`
+      : `${from} → ${to} verschoben`);
+  }
+  render();
+  select(k);
+  return true;
+}
+
+// ---------- Rückgängig ----------
+let undoStack = [];
+function pushUndo(){
+  undoStack.push(JSON.stringify(keys));
+  if(undoStack.length > 50) undoStack.shift();
+}
+function doUndo(){
+  if(!undoStack.length){ note("Nichts rückgängig zu machen."); return; }
+  keys = JSON.parse(undoStack.pop()).map(norm);
+  sel = null;
+  render();
+  note(`Rückgängig · noch ${undoStack.length} Schritt(e) im Speicher`);
+}
+document.addEventListener("keydown", e => {
+  if((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z"){ e.preventDefault(); doUndo(); }
+  if(e.key === "Escape") cancelCarry("Verschieben abgebrochen.");
+});
+
+document.getElementById("f-move").onclick = () => {
+  if(!sel) return;
+  if(carry === sel) cancelCarry("Verschieben abgebrochen.");
+  else pickUp(sel);
+};
+
+function resize(k, h, w){
+  if(k.r + h - 1 > ROWS || k.c + w - 1 > COLS) return;
+  // überdeckte Nachbarn entfernen
+  keys = keys.filter(o => o === k ||
+    !(o.r < k.r + h && o.r + o.h > k.r && o.c < k.c + w && o.c + o.w > k.c));
+  const oh = k.h, ow = k.w;
+  k.h = h; k.w = w;
+  // beim Verkleinern freigewordene Positionen als frei nachziehen
+  for(let r=k.r; r<k.r+oh; r++) for(let c=k.c; c<k.c+ow; c++)
+    if(!key(r,c)) keys.push({r,c,w:1,h:1,label:"",cat:"blanko",state:"frei"});
+  keys.sort((a,b) => a.r-b.r || a.c-b.c);
+}
+
+document.getElementById("f-label").oninput = e => { if(sel){ sel.label = e.target.value; render(); } };
+document.getElementById("f-cat").onchange  = e => { if(sel){ sel.cat = e.target.value; if(sel.state==="frei") sel.state="belegt"; render(); document.getElementById("f-state").value=sel.state; } };
+document.getElementById("f-state").onchange= e => { if(sel){ sel.state = e.target.value; render(); } };
+document.getElementById("f-span").onchange = e => {
+  if(!sel) return;
+  const [h,w] = e.target.value.split("x").map(Number);
+  if(h === sel.h && w === sel.w) return;
+  pushUndo();
+  resize(sel, h, w); render(); select(sel);
+};
+
+// Legende
+const leg = document.getElementById("legend");
+Object.entries(CATS).forEach(([id,cat]) => {
+  const b = document.createElement("button");
+  b.setAttribute("aria-pressed","false");
+  b.innerHTML = `<span class="sw" style="background:${cat.c}"></span>${cat.n}`;
+  b.onclick = () => {
+    filter = filter === id ? null : id;
+    [...leg.children].forEach(x => x.setAttribute("aria-pressed","false"));
+    if(filter) b.setAttribute("aria-pressed","true");
+    render();
+  };
+  leg.appendChild(b);
+});
+const catSel = document.getElementById("f-cat");
+Object.entries(CATS).forEach(([id,cat]) => {
+  const o = document.createElement("option");
+  o.value = id; o.textContent = cat.n; catSel.appendChild(o);
+});
+
+// Werkzeuge
+document.getElementById("t-undo").onclick = doUndo;
+document.getElementById("t-share").onclick = shareFile;
+document.getElementById("t-print").onclick = () => window.print();
+document.getElementById("t-blank").onclick = () => {
+  if(confirm("Alles verwerfen und mit leerer Vorlage beginnen?")){ pushUndo(); loadBlank(); }
+};
+document.getElementById("t-reset").onclick = () => {
+  if(confirm("Alles verwerfen und " + RESET_NAME + " laden?")){ pushUndo(); loadIst(); }
+};
+
+document.getElementById("t-export").onclick = () => {
+  const stamp = new Date().toLocaleString("sv").slice(0,16).replace(/[: ]/g,"-");
+  const name = `tastaturmatrix-128-${stamp}.json`;
+  deliver(name, JSON.stringify({rows:ROWS, cols:COLS, keys}, null, 2), "application/json");
+};
+
+document.getElementById("t-import").onclick = () => {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = "application/json,.json";
+  inp.style.display = "none";
+  document.body.appendChild(inp);
+  inp.onchange = () => {
+    const f = inp.files[0];
+    if(!f){ inp.remove(); return; }
+    const rd = new FileReader();
+    rd.onload = () => {
+      try{
+        const d = JSON.parse(rd.result);
+        if(!Array.isArray(d.keys) || !d.keys.length) throw new Error("kein keys-Array");
+        pushUndo();
+        keys = d.keys.map(norm).sort((a,b) => a.r-b.r || a.c-b.c);
+        sel = null;
+        render();
+        note(`Geladen: ${f.name} · ${keys.length} Tasten`);
+      }catch(err){
+        note(`Datei nicht lesbar (${err.message}).`);
+      }
+      inp.remove();
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+};
+
+// Start: zuletzt bearbeiteten Stand aus dem Browser holen, sonst Ist-Zustand
+(function boot(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      if(Array.isArray(d.keys) && d.keys.length){
+        keys = d.keys.map(norm);
+        render();
+        note("Letzter Stand aus dem Browser wiederhergestellt.");
+        return;
+      }
+    }
+  }catch(e){ /* defekter Speicher → Ist-Zustand */ }
+  loadIst();
+})();
+</script>
+</body></html>
