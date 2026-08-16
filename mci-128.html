@@ -117,6 +117,10 @@
   .key.dragging{opacity:.35}
   .key.over{outline:2px solid var(--led);outline-offset:-2px}
   .key.carry{outline:2px dashed var(--led);outline-offset:-3px;opacity:.55}
+  .key.ghost{
+    box-shadow:0 8px 20px rgba(0,0,0,.6), inset 0 -3px 0 rgba(0,0,0,.22);
+    transform:scale(1.06);
+  }
   .key.flex::after{
     content:"";position:absolute;top:4px;right:4px;
     width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,.35);
@@ -260,7 +264,7 @@
         </select>
       </div>
     </div>
-    <p class="hint">Anklicken zum Bearbeiten. <b>Am Rechner</b> ziehen zum Verschieben, <b>am Handy</b> lange auf die Taste tippen (oder „Aufnehmen“) und dann die Zielposition antippen. Landet die Taste auf einer gleich großen Nachbarin, tauschen beide den Platz; sonst wird das Ziel überschrieben und die alte Position wird frei. Rückgängig mit ⌘Z bzw. Strg&nbsp;+&nbsp;Z.</p>
+    <p class="hint">Anklicken zum Bearbeiten. <b>Am Rechner</b> ziehen zum Verschieben, <b>am Handy</b> die Taste gedrückt halten und mit dem Finger an ihren Platz ziehen — oder aufnehmen und die Zielposition antippen. Landet die Taste auf einer gleich großen Nachbarin, tauschen beide den Platz; sonst wird das Ziel überschrieben und die alte Position wird frei. Rückgängig mit ⌘Z bzw. Strg&nbsp;+&nbsp;Z.</p>
   </div>
 
   <div class="tools">
@@ -424,6 +428,7 @@ function render(){
 
     if(filter && k.cat !== filter) b.style.opacity = ".22";
     if(k === carry) b.classList.add("carry");
+    b.__key = k;
     b.onclick = e => tapKey(e, k);
     wireDrag(b, k);
     wireTouch(b, k);
@@ -542,15 +547,21 @@ let suppressTap = false; // unterdrückt den Klick direkt nach einem langen Tipp
 
 const pos = k => ROWL[k.r-1] + String(k.c).padStart(2,"0");
 
-function pickUp(k){
-  if(!k) return;
-  if(k.state === "frei"){ note("Leere Mulden lassen sich nicht verschieben."); return; }
+function pickUp(k, node){
+  if(!k) return false;
+  if(k.state === "frei"){ note("Leere Mulden lassen sich nicht verschieben."); return false; }
   carry = k;
-  render(); select(k);
-  note(pos(k) + " aufgenommen — Zielposition antippen (nochmal drauf: Abbruch)");
+  // Beim Ziehen mit dem Finger darf das Raster nicht neu aufgebaut werden,
+  // sonst reißt die laufende Berührung ab.
+  if(node) node.classList.add("carry");
+  else     render();
+  select(k);
+  note(pos(k) + " aufgenommen — ziehen oder Zielposition antippen");
+  return true;
 }
 
 function cancelCarry(msg){
+  hideGhost(); clearTarget();
   if(!carry) return;
   const k = carry; carry = null;
   render(); select(k);
@@ -570,26 +581,94 @@ function tapKey(e, k){
   select(k);
 }
 
+// Taste unter dem Finger finden
+function keyUnder(x, y){
+  const el = document.elementFromPoint(x, y);
+  const b = el && el.closest ? el.closest(".key") : null;
+  return b && b.__key ? {node:b, k:b.__key} : null;
+}
+
+let hovered = null;
+function markTarget(x, y){
+  const hit = keyUnder(x, y);
+  if(hovered && (!hit || hit.node !== hovered)){ hovered.classList.remove("over"); hovered = null; }
+  if(hit && hit.node !== hovered){ hovered = hit.node; hovered.classList.add("over"); }
+}
+function clearTarget(){ if(hovered){ hovered.classList.remove("over"); hovered = null; } }
+
+// mitgezogenes Abbild der Taste
+let ghost = null;
+function showGhost(node, x, y){
+  ghost = node.cloneNode(true);
+  ghost.className = "key ghost";
+  ghost.style.cssText =
+    "position:fixed;z-index:99;pointer-events:none;opacity:.92;margin:0;" +
+    "width:" + node.offsetWidth + "px;height:" + node.offsetHeight + "px;" +
+    "background:" + (node.style.background || "#d8d9d4") + ";";
+  document.body.appendChild(ghost);
+  dragGhost(x, y);
+}
+function dragGhost(x, y){
+  if(!ghost) return;
+  ghost.style.left = (x - ghost.offsetWidth / 2) + "px";
+  ghost.style.top  = (y - ghost.offsetHeight / 2) + "px";
+}
+function hideGhost(){ if(ghost){ ghost.remove(); ghost = null; } }
+
 function wireTouch(b, k){
   if(!TOUCH) return;
-  let timer = null, sx = 0, sy = 0;
-  const stop = () => { if(timer){ clearTimeout(timer); timer = null; } };
+  let timer = null, sx = 0, sy = 0, holding = false, moved = false;
+  const stopTimer = () => { if(timer){ clearTimeout(timer); timer = null; } };
+
   b.addEventListener("touchstart", e => {
-    const p = e.touches[0]; sx = p.clientX; sy = p.clientY;
+    const p = e.touches[0];
+    sx = p.clientX; sy = p.clientY; holding = false; moved = false;
+    if(carry) return;                       // schon eine Taste in der Hand: Tippen setzt ab
     timer = setTimeout(() => {
       timer = null;
+      if(!pickUp(k, b)) return;
+      holding = true;
       suppressTap = true;
-      setTimeout(() => { suppressTap = false; }, 700);   // hängt nicht fest
+      setTimeout(() => { suppressTap = false; }, 700);
       if(navigator.vibrate) navigator.vibrate(15);
-      pickUp(k);
-    }, 420);
+      showGhost(b, sx, sy);
+    }, 380);
   }, {passive:true});
-  b.addEventListener("touchmove", e => {                 // Wischen = scrollen, kein Aufnehmen
+
+  b.addEventListener("touchmove", e => {
     const p = e.touches[0];
-    if(Math.abs(p.clientX - sx) > 10 || Math.abs(p.clientY - sy) > 10) stop();
-  }, {passive:true});
-  b.addEventListener("touchend", stop, {passive:true});
-  b.addEventListener("touchcancel", stop, {passive:true});
+    if(holding){
+      e.preventDefault();                   // während des Ziehens nicht scrollen
+      moved = true;
+      dragGhost(p.clientX, p.clientY);
+      markTarget(p.clientX, p.clientY);
+      return;
+    }
+    // Wischen vor dem Aufnehmen heißt scrollen
+    if(Math.abs(p.clientX - sx) > 10 || Math.abs(p.clientY - sy) > 10) stopTimer();
+  }, {passive:false});
+
+  const finish = e => {
+    stopTimer();
+    if(!holding) return;
+    holding = false;
+    hideGhost();
+    clearTarget();
+    const t = e.changedTouches && e.changedTouches[0];
+    if(!moved || !t) return;                // nur aufgenommen — Ziel antippen
+    const hit = keyUnder(t.clientX, t.clientY);
+    const c = carry;
+    if(!hit || !c){ note("Neben der Platte losgelassen — Taste bleibt aufgenommen."); return; }
+    const q = hit.node.getBoundingClientRect();
+    const dx = Math.floor((t.clientX - q.left) / q.width  * hit.k.w);
+    const dy = Math.floor((t.clientY - q.top)  / q.height * hit.k.h);
+    const r = hit.k.r + Math.max(0, Math.min(hit.k.h - 1, dy));
+    const c2 = hit.k.c + Math.max(0, Math.min(hit.k.w - 1, dx));
+    carry = null;
+    if(!moveKey(c, r, c2)) render();
+  };
+  b.addEventListener("touchend", finish);
+  b.addEventListener("touchcancel", finish);
 }
 
 // ---------- Verschieben per Maus ----------
