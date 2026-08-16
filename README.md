@@ -22,8 +22,9 @@ der die Adresse kennt.
 ## Bedienung
 
 Taste antippen zum Bearbeiten (Beschriftung, Farbe, Größe, Status).
-Verschieben am Rechner per Ziehen, am Handy durch langes Tippen und
-Antippen der Zielposition. Gleich große Tasten tauschen den Platz.
+Verschieben am Rechner per Ziehen, am Handy durch Gedrückthalten und
+Ziehen mit dem Finger — oder aufnehmen und die Zielposition antippen.
+Gleich große Tasten tauschen den Platz.
 Rückgängig mit ⌘Z / Strg + Z.
 
 ## Speichern
