@@ -64,6 +64,32 @@
   .card .go{margin-left:auto;font-family:var(--mono);font-size:18px;color:var(--rail-dim)}
   a.card:hover .go{color:var(--led)}
 
+  .tests{margin-top:30px;padding-top:18px;border-top:1px solid #262b2f}
+  .tests h2{font-size:15px;font-weight:600;margin:0 0 4px}
+  .tests .lead{color:var(--rail);font-size:13px;margin:0 0 14px}
+  .tests form{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .tests input[type=text]{
+    flex:1 1 180px;background:#0b0e10;color:var(--ink-inv);border:1px solid #2c3237;
+    border-radius:3px;padding:9px 11px;font-family:var(--sans);font-size:16px;
+  }
+  .tests input:focus{outline:none;border-color:var(--led)}
+  .tests button{
+    background:#1d2226;color:var(--ink-inv);border:1px solid #333a3f;border-radius:3px;
+    padding:9px 14px;cursor:pointer;font-family:var(--mono);font-size:11px;
+    letter-spacing:.1em;text-transform:uppercase;
+  }
+  .tests button:hover{border-color:var(--led)}
+  .plans{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .plans a{
+    display:flex;align-items:baseline;gap:12px;padding:10px 14px;border-radius:6px;
+    background:var(--plate);border:1px solid #23282c;text-decoration:none;color:inherit;
+  }
+  .plans a:hover{border-color:var(--led)}
+  .plans b{font-weight:600}
+  .plans .when{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--rail)}
+  .plans .n{font-family:var(--mono);font-size:11px;color:var(--rail-dim)}
+  .plans-status{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--rail)}
+
   .note{
     margin-top:30px;padding-top:18px;border-top:1px solid #262b2f;
     color:var(--rail);font-size:13px;
@@ -109,10 +135,65 @@
     </a>
   </div>
 
+  <div class="tests">
+    <h2>Testpläne MCI 84</h2>
+    <p class="lead">Jede Person hat ihren eigenen Plan unter ihrem Namen, z.&nbsp;B. <b>5202.github.io/kassentastatur/Daniel</b>. Änderungen werden automatisch gespeichert und erscheinen auf jedem Gerät, das den Namen aufruft.</p>
+    <form id="name-form">
+      <input type="text" id="name-in" placeholder="Vorname" autocomplete="off" autocapitalize="words">
+      <button type="submit">Meinen Plan öffnen</button>
+    </form>
+    <ul class="plans" id="plans"></ul>
+    <div class="plans-status" id="plans-status">Lade Testpläne …</div>
+  </div>
+
   <div class="note">
     <p><b>Bedienung.</b> Taste antippen zum Bearbeiten. Am Rechner ziehen zum Verschieben, am Handy lange auf die Taste tippen und dann die Zielposition antippen. Rückgängig mit ⌘Z oder dem Button.</p>
-    <p><b>Speichern.</b> Der Browser merkt sich Änderungen auf dem eigenen Gerät. Zum Austauschen „JSON sichern“ und die Datei verschicken, der andere lädt sie über „JSON laden“. „Weitergabe-HTML“ erzeugt eine eigenständige Seite, die den Stand schon enthält.</p>
-    <p>Jeder Plan speichert für sich. Änderungen auf einem Gerät erscheinen nicht automatisch auf einem anderen.</p>
+    <p><b>Speichern.</b> Der MCI-84-Plan mit Namen speichert automatisch im Netz. Ohne Namen — und bei der MCI 128 — merkt sich nur der Browser auf dem eigenen Gerät die Änderungen. Zum Austauschen „JSON sichern“ und die Datei verschicken, der andere lädt sie über „JSON laden“. „Weitergabe-HTML“ erzeugt eine eigenständige Seite, die den Stand schon enthält.</p>
   </div>
 </div>
+<script>
+const DB_URL = "https://mci84-kasse-default-rtdb.europe-west1.firebasedatabase.app";
+
+function nutzerName(raw){
+  let s = (raw || "").trim().replace(/\s+/g, "-").replace(/[.$#\[\]\/\\?&%\x00-\x1f]/g, "");
+  s = s.slice(0, 30);
+  if(!s) return null;
+  return { id: s.toLowerCase(), name: s.charAt(0).toUpperCase() + s.slice(1) };
+}
+document.getElementById("name-form").onsubmit = e => {
+  e.preventDefault();
+  const u = nutzerName(document.getElementById("name-in").value);
+  if(u) location.href = "mci-84.html?u=" + encodeURIComponent(u.id);
+};
+
+(async function listePlaene(){
+  const ul = document.getElementById("plans"), st = document.getElementById("plans-status");
+  try{
+    const r = await fetch(DB_URL + "/plaene/mci-84.json", {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json() || {};
+    const rows = Object.entries(d)
+      .map(([id, p]) => ({id, name: p.name || id, when: p.updatedAt || "", n: p.tasten}))
+      .sort((a, b) => b.when.localeCompare(a.when));
+    ul.innerHTML = "";
+    rows.forEach(p => {
+      const li = document.createElement("li"), a = document.createElement("a");
+      a.href = "mci-84.html?u=" + encodeURIComponent(p.id);
+      const b = document.createElement("b"); b.textContent = p.name;
+      const n = document.createElement("span"); n.className = "n";
+      n.textContent = p.n ? p.n + " Tasten" : "";
+      const w = document.createElement("span"); w.className = "when";
+      let t = p.when ? new Date(p.when) : null;
+      if(t && isNaN(t)) t = null;
+      w.textContent = t ? t.toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit"}) + " " +
+                          t.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"}) : "";
+      a.append(b, n, w); li.appendChild(a); ul.appendChild(li);
+    });
+    st.textContent = rows.length ? rows.length + " Testplan" + (rows.length > 1 ? "e" : "") :
+                                   "Noch keine Testpläne — der erste entsteht beim ersten Aufruf mit Namen.";
+  }catch(e){
+    st.textContent = "Testpläne gerade nicht erreichbar.";
+  }
+})();
+</script>
 </body></html>

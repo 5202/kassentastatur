@@ -13,10 +13,13 @@ der die Adresse kennt.
 
 ## Aufbau
 
-    index.html        Übersicht mit beiden Plänen
-    mci-84.html       7 × 12, 84 Positionen
-    mci-128.html      8 × 16, 128 Positionen
-    robots.txt        hält Suchmaschinen fern
+    index.html            Übersicht mit beiden Plänen und der Liste der Testpläne
+    mci-84.html           7 × 12, 84 Positionen — speichert mit Namen im Netz
+    mci-128.html          8 × 16, 128 Positionen
+    404.html              leitet …/kassentastatur/Daniel auf mci-84.html?u=Daniel
+    database.rules.json   Zugriffsregeln der Firebase Realtime Database
+    firebase.json         Firebase-Konfiguration (nur Datenbank, kein Hosting)
+    robots.txt            hält Suchmaschinen fern
 
 
 ## Bedienung
@@ -26,6 +29,33 @@ Verschieben am Rechner per Ziehen, am Handy durch Gedrückthalten und
 Ziehen mit dem Finger — oder aufnehmen und die Zielposition antippen.
 Gleich große Tasten tauschen den Platz.
 Rückgängig mit ⌘Z / Strg + Z.
+
+## Testumgebung MCI 84: ein Plan pro Person
+
+Jede Testperson ruft die Seite mit ihrem Namen auf:
+
+    https://5202.github.io/kassentastatur/Daniel
+    https://5202.github.io/kassentastatur/Johanna
+
+Die `404.html` leitet das auf `mci-84.html?u=daniel` weiter. Die Seite lädt den
+Plan dieses Namens aus der Firebase Realtime Database (Projekt
+`mci84-kasse`, Google-Konto oliverdoetsch@gmail.com, Gratis-Tarif) und speichert jede
+Änderung nach kurzer Pause automatisch dorthin — pro Name ein Eintrag unter
+`plaene/mci-84/<name>`. Der Name wird kleingeschrieben, `Daniel` und `daniel`
+sind derselbe Plan. Alle Pläne stehen auf der Übersichtsseite; wer einen
+fremden Plan öffnet und ändert, überschreibt ihn.
+
+Ohne Netz zeigt die Seite den zuletzt auf dem Gerät gespeicherten Stand und
+reicht Änderungen nach, sobald die Verbindung wieder da ist. Ohne Namen
+speichert die Seite wie bisher nur im Browser des Geräts.
+
+Regeln ändern und ausrollen (im Projektordner ist per `firebase login:use` das Konto oliverdoetsch@gmail.com gesetzt):
+
+    firebase deploy --only database
+
+Alle Pläne als JSON abrufen:
+
+    curl https://mci84-kasse-default-rtdb.europe-west1.firebasedatabase.app/plaene/mci-84.json
 
 ## Speichern
 

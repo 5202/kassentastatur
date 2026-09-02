@@ -1,0 +1,15 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "plaene": {
+      "mci-84": {
+        ".read": true,
+        "$name": {
+          ".write": "newData.exists()",
+          ".validate": "$name.length <= 30 && newData.hasChildren(['name', 'keys', 'updatedAt']) && newData.child('name').isString() && newData.child('name').val().length <= 30 && newData.child('keys').isString() && newData.child('keys').val().length < 60000 && newData.child('updatedAt').isString() && newData.child('updatedAt').val().length < 40"
+        }
+      }
+    }
+  }
+}

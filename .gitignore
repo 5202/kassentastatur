@@ -1,2 +1,5 @@
 # Zwischenstände und Downloads — Git übernimmt die Historie
 sicherungen/
+
+# CLI-Protokolle
+firebase-debug.log

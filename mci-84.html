@@ -176,6 +176,21 @@
     font-family:var(--mono);font-size:11px;letter-spacing:.08em;
     color:var(--led);margin-left:6px;
   }
+  .sync{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+    margin-top:6px;min-height:14px;color:var(--rail);
+  }
+  .sync.ok{color:var(--led)}
+  .sync.wait{color:var(--rail)}
+  .sync.err{color:#e0a04f}
+  .banner{
+    border:1px solid #3a3f2a;border-left:3px solid #e0c34f;border-radius:6px;
+    background:#16170f;padding:12px 14px;margin:0 0 16px;font-size:13px;color:var(--ink-inv);
+  }
+  .banner b{color:#e0c34f;font-weight:600}
+  .banner code{font-family:var(--mono);font-size:12px;color:var(--ink-inv)}
+  .banner form{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .banner input[type=text]{flex:1 1 160px}
 
 
   /* ---------- Handy / kleine Schirme ---------- */
@@ -219,6 +234,7 @@
     <div>
       <h1>Belegungsplan Kassentastatur</h1>
       <div class="sub" id="dims">Matrix 7 × 12 · 84 Positionen · 80 Tasten</div>
+      <div class="sync" id="sync"></div>
     </div>
     <div class="counts">
       <div><b id="n-belegt">80</b><span>belegt</span></div>
@@ -226,6 +242,16 @@
       <div class="c-frei"><b id="n-frei">2</b><span>frei</span></div>
     </div>
   </header>
+
+  <div class="banner" id="banner" hidden>
+    <b>Ohne Namen speichert die Seite nur auf diesem Gerät.</b>
+    Für deinen eigenen Plan ruf die Seite mit deinem Namen auf, z.&nbsp;B.
+    <code>5202.github.io/kassentastatur/Daniel</code> — oder gib ihn hier ein:
+    <form id="name-form">
+      <input type="text" id="name-in" placeholder="Vorname" autocomplete="off" autocapitalize="words">
+      <button class="btn" type="submit">Meinen Plan öffnen</button>
+    </form>
+  </div>
 
   <div class="plate"><div class="grid" id="grid"></div></div>
 
@@ -278,7 +304,7 @@
     <span class="status" id="t-status"></span>
   </div>
 
-  <p class="hint">Der Browser merkt sich Änderungen automatisch. <b>Weitergabe-HTML</b> erzeugt eine eigenständige Datei, die den aktuellen Stand bereits enthält — die kann man verschicken, der Empfänger öffnet sie im Browser und arbeitet direkt darin weiter. <b>JSON sichern</b> legt zusätzlich eine reine Datensicherung an.</p>
+  <p class="hint" id="save-hint">Der Browser merkt sich Änderungen automatisch. <b>Weitergabe-HTML</b> erzeugt eine eigenständige Datei, die den aktuellen Stand bereits enthält — die kann man verschicken, der Empfänger öffnet sie im Browser und arbeitet direkt darin weiter. <b>JSON sichern</b> legt zusätzlich eine reine Datensicherung an.</p>
 </div>
 
 <script id="app">
@@ -329,7 +355,25 @@ let sel = null;
 let filter = null;
 
 // ---------- Persistenz ----------
-const LS_KEY = "kassentastatur-matrix-v2";
+// Jeder Tester ruft die Seite mit seinem Namen auf (…/kassentastatur/Daniel,
+// die 404.html leitet auf mci-84.html?u=Daniel). Der Plan wird dann unter
+// diesem Namen im Netz gespeichert und erscheint auf jedem Gerät, das den
+// Namen aufruft. Ohne Namen bleibt alles nur im Browser dieses Geräts.
+const DB_URL  = "https://mci84-kasse-default-rtdb.europe-west1.firebasedatabase.app";
+const DB_PATH = "plaene/mci-84";
+
+// Name bereinigen: Schlüssel klein und ohne Sonderzeichen, Anzeige mit großem Anfang
+function nutzerName(raw){
+  let s = (raw || "").trim().replace(/\s+/g, "-").replace(/[.$#\[\]\/\\?&%\x00-\x1f]/g, "");
+  s = s.slice(0, 30);
+  if(!s) return null;
+  return { id: s.toLowerCase(), name: s.charAt(0).toUpperCase() + s.slice(1) };
+}
+const USER = nutzerName(new URLSearchParams(location.search).get("u") ||
+                        decodeURIComponent(location.hash.slice(1)));
+
+const LS_BASE = "kassentastatur-matrix-v2";
+const LS_KEY  = LS_BASE + (USER ? "-nutzer-" + USER.id : "");
 
 // Meldung unten in der Werkzeugleiste
 let RESET_NAME = "den Ist-Zustand";
@@ -355,9 +399,106 @@ function autosave(){
   try{
     localStorage.setItem(LS_KEY, JSON.stringify({rows:ROWS, cols:COLS, keys}));
   }catch(e){
-    note("Browser-Speicher nicht verfügbar — bitte per JSON sichern.");
+    if(!sync.on()) note("Browser-Speicher nicht verfügbar — bitte per JSON sichern.");
   }
+  sync.schedule();
 }
+
+// ---------- Speichern im Netz, pro Name ----------
+const sync = {
+  timer: null, pending: false, busy: false,
+  ready: false,          // erst nach erfolgreichem Laden darf geschrieben werden
+  baseline: null,        // Stand beim Start ohne Netz, zum Erkennen eigener Änderungen
+  lastSaved: null,       // zuletzt hochgeladener Stand (JSON), verhindert Leerläufe
+  on(){ return !!(DB_URL && USER); },
+  url(){ return `${DB_URL}/${DB_PATH}/${encodeURIComponent(USER.id)}.json`; },
+  show(msg, cls){
+    const e = document.getElementById("sync");
+    if(e){ e.textContent = msg; e.className = "sync " + (cls || ""); }
+  },
+  zeit(iso){
+    const d = iso ? new Date(iso) : new Date();
+    return d.toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit"}) + " " +
+           d.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"});
+  },
+  async load(){
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 8000);
+    try{
+      const r = await fetch(this.url(), {signal: ctl.signal, cache: "no-store"});
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      return await r.json();          // null, wenn unter dem Namen noch nichts liegt
+    }finally{ clearTimeout(t); }
+  },
+  schedule(){
+    if(!this.on()) return;
+    if(JSON.stringify(keys) === this.lastSaved) return;
+    this.pending = true;
+    this.show(this.ready ? "Änderung wird gespeichert …" : "Keine Verbindung — Änderung wird nachgereicht.",
+              this.ready ? "wait" : "err");
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.flush(), 900);
+  },
+  async flush(keepalive){
+    clearTimeout(this.timer); this.timer = null;
+    if(!this.on() || !this.pending || this.busy) return;
+    if(!this.ready){ this.reconnect(); return; }
+    this.busy = true; this.pending = false;
+    const snap = JSON.stringify(keys);
+    const body = JSON.stringify({
+      name: USER.name, rows: ROWS, cols: COLS, keys: snap,
+      tasten: keys.length, updatedAt: new Date().toISOString()
+    });
+    let delay = 900;
+    try{
+      const r = await fetch(this.url(), {
+        method: "PUT", body, keepalive: !!keepalive,
+        headers: {"Content-Type": "application/json"}
+      });
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      this.lastSaved = snap;
+      this.show(`Gespeichert für ${USER.name} · ${this.zeit()}`, "ok");
+    }catch(e){
+      this.pending = true; delay = 15000;
+      this.show("Keine Verbindung — Stand liegt nur auf diesem Gerät, wird nachgereicht.", "err");
+    }finally{
+      this.busy = false;
+      if(this.pending) this.timer = setTimeout(() => this.flush(), delay);
+    }
+  },
+  // Laden ist fehlgeschlagen: regelmäßig neu versuchen, bis der Netzstand bekannt ist.
+  // Hat der Nutzer inzwischen nichts geändert, gilt der Netzstand; sonst seine Arbeit.
+  reconnect(){
+    if(this._rc) return;
+    this._rc = setTimeout(async () => {
+      this._rc = null;
+      try{
+        const d = await this.load();
+        this.ready = true;
+        const geaendert = JSON.stringify(keys) !== this.baseline;
+        if(d && typeof d.keys === "string" && !geaendert){
+          const arr = JSON.parse(d.keys);
+          if(Array.isArray(arr) && arr.length){
+            keys = arr.map(norm); sel = null;
+            this.lastSaved = JSON.stringify(keys);
+            render();
+            this.show(`Plan von ${USER.name} geladen · Stand ${this.zeit(d.updatedAt)}`, "ok");
+            return;
+          }
+        }
+        this.pending = true;
+        this.flush();
+      }catch(e){
+        this.reconnect();
+      }
+    }, 15000);
+  }
+};
+window.addEventListener("online", () => { if(sync.pending) sync.flush(); });
+window.addEventListener("pagehide", () => { if(sync.pending) sync.flush(true); });
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "hidden" && sync.pending) sync.flush(true);
+});
 
 const key = (r,c) => keys.find(k =>
   r >= k.r && r < k.r + k.h && c >= k.c && c < k.c + k.w);
@@ -515,8 +656,9 @@ function shareFile(){
   src = src.slice(0, a) + "const IST = [\n" + rows.join(",\n") + src.slice(b);
 
   // eigener Speicherplatz, damit der eingebaute Stand beim Empfänger sicher erscheint
-  src = src.replace(/const LS_KEY = "[^"]+";/,
-    'const LS_KEY = "' + LS_KEY.replace(/-\d{4}-\d\d-\d\d-\d\d-\d\d$/, "") + '-' + stamp + '";');
+  src = src.replace(/const LS_BASE = "[^"]+";/,
+    'const LS_BASE = "' + LS_BASE.replace(/-\d{4}-\d\d-\d\d-\d\d-\d\d$/, "") + '-' + stamp + '";');
+  src = src.replace(/const DB_URL  = "[^"]*";/, 'const DB_URL  = "";');
   src = src.replace(/RESET_NAME = "[^"]+";/, 'RESET_NAME = "den Ausgangsstand dieser Datei";');
   sc.textContent = src;
 
@@ -846,8 +988,15 @@ document.getElementById("t-import").onclick = () => {
   inp.click();
 };
 
-// Start: zuletzt bearbeiteten Stand aus dem Browser holen, sonst Ist-Zustand
-(function boot(){
+// Namensfeld im Hinweis: führt auf den eigenen Plan
+document.getElementById("name-form").onsubmit = e => {
+  e.preventDefault();
+  const u = nutzerName(document.getElementById("name-in").value);
+  if(u) location.href = "mci-84.html?u=" + encodeURIComponent(u.id);
+};
+
+// Stand dieses Geräts aus dem Browser holen
+function bootLocal(){
   try{
     const raw = localStorage.getItem(LS_KEY);
     if(raw){
@@ -855,12 +1004,50 @@ document.getElementById("t-import").onclick = () => {
       if(Array.isArray(d.keys) && d.keys.length){
         keys = d.keys.map(norm);
         render();
-        note("Letzter Stand aus dem Browser wiederhergestellt.");
-        return;
+        return true;
       }
     }
   }catch(e){ /* defekter Speicher → Ist-Zustand */ }
-  loadIst();
+  return false;
+}
+
+// Start: mit Namen den Netzstand holen, sonst den Stand dieses Browsers, sonst Ist-Zustand
+(async function boot(){
+  if(!sync.on()){
+    if(DB_URL) document.getElementById("banner").hidden = false;
+    if(bootLocal()) note("Letzter Stand aus dem Browser wiederhergestellt.");
+    else loadIst();
+    return;
+  }
+  document.title = "MCI 84 · " + USER.name;
+  const h1 = document.querySelector("h1");
+  h1.textContent = h1.textContent.split(" · ")[0] + " · " + USER.name;
+  document.getElementById("save-hint").innerHTML =
+    "Änderungen werden automatisch unter dem Namen <b>" + USER.name + "</b> gespeichert und " +
+    "erscheinen auf jedem Gerät, das <code>…/kassentastatur/" + USER.id + "</code> aufruft. " +
+    "<b>JSON sichern</b> legt zusätzlich eine Datensicherung an, <b>Weitergabe-HTML</b> eine eigenständige Datei.";
+  sync.show("Lade Plan von " + USER.name + " …", "wait");
+  try{
+    const d = await sync.load();
+    sync.ready = true;
+    if(d && typeof d.keys === "string"){
+      const arr = JSON.parse(d.keys);
+      if(Array.isArray(arr) && arr.length){
+        keys = arr.map(norm);
+        sync.lastSaved = JSON.stringify(keys);
+        render();
+        sync.show(`Plan von ${USER.name} geladen · Stand ${sync.zeit(d.updatedAt)}`, "ok");
+        return;
+      }
+    }
+    // noch nichts im Netz: Stand dieses Geräts oder Ist-Zustand, wird gleich hochgeladen
+    if(!bootLocal()) loadIst();
+  }catch(e){
+    if(!bootLocal()) loadIst();
+    sync.baseline = JSON.stringify(keys);      // damit der Netzstand später gewinnt, solange hier nichts geändert wurde
+    sync.show("Keine Verbindung — zeige den Stand dieses Geräts, Netzabgleich folgt.", "err");
+    sync.reconnect();
+  }
 })();
 </script>
 </body></html>
