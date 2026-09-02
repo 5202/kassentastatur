@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="de"><head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kassentastatur</title>
+<style>body{background:#0a0c0d;color:#6e767c;font-family:system-ui,sans-serif;padding:40px 20px}a{color:#4fe05a}</style>
+<script>
+// GitHub Pages kennt keine Adressen wie /kassentastatur/Daniel — die landen hier.
+// Der erste Pfadteil ist der Name des Testers und führt auf seinen MCI-84-Plan.
+(function(){
+  var base = "/kassentastatur/";
+  var p = decodeURIComponent(location.pathname);
+  var rest = p.indexOf(base) === 0 ? p.slice(base.length) : p.replace(/^\//, "");
+  var name = rest.split("/")[0].trim();
+  if(name && !/\.[a-z0-9]+$/i.test(name) && !/[.$#\[\]]/.test(name)){
+    location.replace(base + "mci-84.html?u=" + encodeURIComponent(name));
+  }else{
+    location.replace(base);
+  }
+})();
+</script>
+</head><body>
+<p>Einen Moment …</p>
+<noscript><a href="/kassentastatur/">Zur Übersicht</a></noscript>
+</body></html>
