@@ -125,6 +125,17 @@
     content:"";position:absolute;top:4px;right:4px;
     width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,.35);
   }
+  /* Icon statt Beschriftung: fuellt die Kappe, Rand bleibt frei.
+     Die Kappen im Mockup sind breiter als hoch - das Icon wird eingepasst,
+     nicht gestreckt (object-fit: contain), Hintergrund ist die Kappenfarbe. */
+  .key img.ico{
+    position:absolute;inset:4px 5px 6px;width:auto;height:auto;
+    max-width:calc(100% - 10px);max-height:calc(100% - 10px);
+    margin:auto;object-fit:contain;pointer-events:none;
+    filter:drop-shadow(0 1px 0 rgba(255,255,255,.35));
+  }
+  .key.hasico{font-size:0}
+  .key.hasico .code{font-size:8px}
   .code{
     position:absolute;bottom:2px;left:4px;
     font-family:var(--mono);font-size:8px;font-weight:400;
@@ -265,6 +276,10 @@
         <input type="text" id="f-label" placeholder="z. B. Obst/Gemüse" disabled="" value="">
       </div>
       <div class="field">
+        <label for="f-icon">Icon (Datei in icons/, z. B. 600)</label>
+        <input type="text" id="f-icon" placeholder="leer = nur Text" disabled="" value="">
+      </div>
+      <div class="field">
         <label for="f-cat">Farbe / Kategorie</label>
         <select id="f-cat" disabled=""></select>
       </div>
@@ -391,7 +406,8 @@ const norm = k => ({
   w: +k.w || 1, h: +k.h || 1,
   label: k.label ?? "",
   cat: CATS[k.cat] ? k.cat : "blanko",
-  state: ["belegt","flex","frei"].includes(k.state) ? k.state : "belegt"
+  state: ["belegt","flex","frei"].includes(k.state) ? k.state : "belegt",
+  icon: /^[a-z0-9_-]{1,24}$/i.test(k.icon || "") ? String(k.icon) : ""
 });
 
 function autosave(){
@@ -546,6 +562,14 @@ function render(){
     b.style.gridColumn = `${k.c+1} / span ${k.w}`;
     if(k.state !== "frei") b.style.background = cat.c;
     b.textContent = k.state === "frei" ? "frei" : k.label;
+    if(k.icon && k.state !== "frei"){
+      const im = document.createElement("img");
+      im.className = "ico"; im.alt = k.label; im.draggable = false;
+      im.src = "icons/" + encodeURIComponent(k.icon) + ".png";
+      im.onerror = () => { im.remove(); b.classList.remove("hasico"); };
+      b.classList.add("hasico"); b.title = k.label;
+      b.appendChild(im);
+    }
 
     const code = document.createElement("span");
     code.className = "code";
@@ -579,9 +603,10 @@ function select(k){
     (k.w*k.h > 1 ? ` · ${k.h} × ${k.w}` : "");
   const L=document.getElementById("f-label"), C=document.getElementById("f-cat"),
         S=document.getElementById("f-span"), T=document.getElementById("f-state"),
-        M=document.getElementById("f-move");
-  [L,C,S,T].forEach(e => e.disabled = false);
+        M=document.getElementById("f-move"), I=document.getElementById("f-icon");
+  [L,C,S,T,I].forEach(e => e.disabled = false);
   L.value = k.label; C.value = k.cat; S.value = `${k.h}x${k.w}`; T.value = k.state;
+  I.value = k.icon || "";
   M.disabled = k.state === "frei";
   M.textContent = carry === k ? "✕ Abbrechen" : "↕ Aufnehmen";
   if(!TOUCH) L.focus();
@@ -631,10 +656,11 @@ function shareFile(){
   });
   const stat = doc.querySelector("#t-status"); if(stat) stat.textContent = "";
   const ed   = doc.querySelector("#ed-title"); if(ed)   ed.textContent = "Keine Taste gewählt";
-  ["f-label","f-cat","f-span","f-state","f-move"].forEach(id => {
+  ["f-label","f-icon","f-cat","f-span","f-state","f-move"].forEach(id => {
     const e = doc.querySelector("#"+id); if(e) e.setAttribute("disabled","");
   });
   const lab = doc.querySelector("#f-label"); if(lab) lab.setAttribute("value","");
+  const ico = doc.querySelector("#f-icon");  if(ico) ico.setAttribute("value","");
   const rst = doc.querySelector("#t-reset"); if(rst) rst.textContent = "Ausgangsstand";
   const h1  = doc.querySelector("h1");
   h1.textContent = h1.textContent.split(" · Stand")[0] +
@@ -912,6 +938,12 @@ function resize(k, h, w){
 }
 
 document.getElementById("f-label").oninput = e => { if(sel){ sel.label = e.target.value; render(); } };
+document.getElementById("f-icon").oninput  = e => {
+  if(!sel) return;
+  const v = e.target.value.trim();
+  sel.icon = /^[a-z0-9_-]{1,24}$/i.test(v) ? v : "";
+  render();
+};
 document.getElementById("f-cat").onchange  = e => { if(sel){ sel.cat = e.target.value; if(sel.state==="frei") sel.state="belegt"; render(); document.getElementById("f-state").value=sel.state; } };
 document.getElementById("f-state").onchange= e => { if(sel){ sel.state = e.target.value; render(); } };
 document.getElementById("f-span").onchange = e => {

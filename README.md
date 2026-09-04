@@ -57,6 +57,16 @@ Alle Pläne als JSON abrufen:
 
     curl https://mci84-kasse-default-rtdb.europe-west1.firebasedatabase.app/plaene/mci-84.json
 
+## Icons auf den Tasten
+
+Eine Taste kann statt der Beschriftung ein Bild zeigen. Im Editor das Feld
+„Icon" mit dem Dateinamen ohne Endung füllen, z. B. `600` für `icons/600.png`;
+die Beschriftung bleibt als Tooltip erhalten. Die Bilder in `icons/` sind
+200 × 200 px mit transparentem Hintergrund, vom Weißrand befreit — die
+Aufbereitung aus den 1024er Originalen ist nur für das Mockup gedacht, der
+Druck der Tastenkappen läuft über die Originale. Benannt nach PLU:
+600–698 Obst, 460–595 Gemüse. Die Weitergabe-HTML trägt keine Icons mit.
+
 ## Speichern
 
 Der Browser sichert den Stand pro Gerät automatisch. „JSON sichern"
