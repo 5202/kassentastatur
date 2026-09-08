@@ -6,6 +6,8 @@ Abhängigkeiten — im Browser öffnen genügt, auch offline.
 
 - **MCI 84** — `mci-84.html`
 - **MCI 128** — `mci-128.html`, Belegung aus der 84 übernommen
+- **Tastenstatistik MCI 84** — `mci-84-tasten.html`, Anschläge je Buchstabentaste A–Z
+  im letzten Jahr auf der Ist-Belegung (Zahlen fest eingebaut, Quelle Bios-SQL)
 
 Veröffentlicht unter https://5202.github.io/kassentastatur/ — nicht in
 Suchmaschinen gelistet (`robots.txt`, `noindex`), aber für jeden erreichbar,
@@ -16,6 +18,7 @@ der die Adresse kennt.
     index.html            Übersicht mit beiden Plänen und der Liste der Testpläne
     mci-84.html           7 × 12, 84 Positionen — speichert mit Namen im Netz
     mci-128.html          8 × 16, 128 Positionen
+    mci-84-tasten.html    Ist-Belegung mit Anschlägen je A–Z-Taste, Stand 09/2026
     404.html              leitet …/kassentastatur/Daniel auf mci-84.html?u=Daniel
     database.rules.json   Zugriffsregeln der Firebase Realtime Database
     firebase.json         Firebase-Konfiguration (nur Datenbank, kein Hosting)
