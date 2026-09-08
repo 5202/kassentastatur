@@ -220,7 +220,7 @@
     <div class="notes">
       <p><b>Was zählt als Anschlag.</b> Die Kasse protokolliert Vorgänge, keine Tasten. Gezählt ist deshalb die Wirkung: eine Bonposition, ein LOG-Eintrag, ein Bon. <b>Gemessen</b> heißt, der Vorgang steht direkt in <code>Kasse.dbo.LOG</code> oder im Positions-Flag; <b>abgeleitet</b> heißt, er ist aus der Wirkung im Bon rekonstruiert; <b>geschätzt</b> gilt nur für die Zifferntasten.</p>
       <p><b>Positions-Flag.</b> <code>Detail.Flag</code> ist ein Bitfeld: 1 Artikel mit angehängtem Pfand, 2 automatisch angehängte Pfandzeile, 4 Preis-EAN vom Etikett, 8 Kassenwaage, 32 stornierte Position (Paar aus Original und Gegenbuchung), 64 Gebinde-Taste, 512 freie Preiseingabe. Über dieses Flag sind Storno, Waage, Preiseingabe und Gebinde erkennbar.</p>
-      <p><b>Ziffern.</b> Geschätzt aus den Ziffern der getippten Artikelnummern (235.857), Mehrfachmengen (43.421) und freien Preiseingaben (87.878, als Centbetrag ohne Komma angenommen). Nicht enthalten: EAN-Eingaben von Hand, Kundennummern, Rabattsätze, Ein- und Auszahlungsbeträge, Beträge beim Bezahlen. Werden Preise mit Komma getippt, entfallen bis zu 87.878 Anschläge auf die Komma-Taste.</p>
+      <p><b>Ziffern.</b> Geschätzt aus den Ziffern der getippten Artikelnummern (235.857 PLU-Positionen, 174.856 davon Wiegeware), Mehrfachmengen über die Menge-Taste (43.421) und freien Preiseingaben (87.878, als Centbetrag ohne Komma angenommen). Nicht enthalten: EAN-Eingaben von Hand, Kundennummern, Rabattsätze, Ein- und Auszahlungsbeträge, Beträge beim Bezahlen. Werden Preise mit Komma getippt, entfallen bis zu 87.878 Anschläge auf die Komma-Taste.</p>
       <p><b>Nicht auf der Tastatur und ohne Bonzeile:</b> G Bedientheke, P @PfandRetour, R @Abschrift, X Heilkräuter; H, Q und W sind im Stamm frei. Z-Bons (2.671) laufen über das Menü, Anmeldungen (1.739) über den Anmeldedialog.</p>
     </div>
   </section>
@@ -332,14 +332,13 @@ const FN = {
   E06:{m:"Zwischensumme anzeigen", q:"none"},
   E07:{m:"Zahlung auf Kundenkonto (Rechnung)", q:"abg", n:113,
        how:"Bons auf Konto 100 ohne Bar- und EC-Betrag; Kasse.dbo.Konten zählt 111 Posten „Einkauf“."},
-  E11:{m:"Getippte Artikelnummer (PLU) abschließen", q:"abg", n:235857,
-       how:"Positionen mit 2- bis 5-stelliger Nummer, die nicht automatisch angehängt wurden (kein Pfand-, Gebinde- oder Stornoflag). Ob der Abschluss über „Artikel Nr.“ oder Enter läuft, ist nicht unterscheidbar.",
-       extra:[["davon Wiegeware (Waage)",174856],["davon mit Preiseingabe",4719],["3-stellig",235498]]},
-  E12:{m:"Mehrfachbuchung: Menge × Artikel", q:"abg", n:43421,
-       how:"Positionen mit ganzzahliger Menge über 1 ohne Pfand-, Gebinde- oder Stornoflag. Ob „∗“ oder „Menge“ gedrückt wurde, ist nicht unterscheidbar; die Zahl steht auf beiden.",
-       extra:[["2×",21555],["3×",7704],["4×",4937],["6×",2833],["10×",1908]]},
+  E11:{m:"Artikelnummer-Modus; wird beim Scannen automatisch gesetzt", q:"none",
+       how:"Kein eigener Anschlag: die Kasse setzt den Wert selbst, wenn gescannt wird.",
+       extra:[["getippte Artikelnummern (PLU)",235857],["davon Wiegeware (Waage)",174856]]},
+  E12:{m:"Multiplikator; wird von der Menge-Taste automatisch gesetzt", q:"none",
+       how:"Kein eigener Anschlag: die Menge-Taste setzt den Wert selbst."},
   F04:{m:"Mehrfachbuchung: Menge eingeben", q:"abg", n:43421,
-       how:"Dieselben 43.421 Mehrfachbuchungen wie bei „∗“ — welche der beiden Tasten benutzt wird, steht nicht in den Daten.",
+       how:"Positionen mit ganzzahliger Menge über 1 ohne Pfand-, Gebinde- oder Stornoflag.",
        extra:[["2×",21555],["3×",7704],["4×",4937],["6×",2833],["10×",1908]]},
   F05:{m:"Getippte EAN abschließen", q:"none",
        how:"Getippte und gescannte EANs sehen im Bon gleich aus.",
