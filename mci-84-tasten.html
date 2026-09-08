@@ -129,11 +129,10 @@
   section{margin-top:26px}
   h2{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--rail);margin:0 0 10px;font-weight:400}
   .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
-  table{border-collapse:collapse;width:100%;font-size:13px;min-width:700px}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:560px}
   th,td{padding:7px 12px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;vertical-align:top}
   th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rail);font-weight:400;border-bottom:1px solid var(--line)}
   th.t,td.t{text-align:left}
-  td.wrap{white-space:normal;min-width:260px;max-width:520px;color:var(--muted);font-size:12px}
   td.l{font-family:var(--mono);color:var(--muted)}
   td.cap{font-weight:600}
   td.stamm{color:var(--muted)}
@@ -143,9 +142,6 @@
   tbody tr:hover{background:rgba(79,224,90,.06)}
   tfoot td{border-top:1px solid var(--line);font-weight:600;color:var(--ink-inv)}
   td.neg{color:#e0a04f}
-  .notes{color:var(--muted);font-size:13px;max-width:70ch;margin:12px 0 0}
-  .notes p{margin:0 0 6px}
-  .notes code{font-family:var(--mono);font-size:12px;color:var(--ink-inv)}
 
   @media (max-width:820px){
     body{padding:14px 10px 44px;font-size:14px}
@@ -201,7 +197,7 @@
     <h2>Funktions-, Rabatt- und Zifferntasten</h2>
     <div class="tbl"><table id="tbl-f">
       <thead><tr>
-        <th class="t">Taste</th><th class="t">Kappe</th><th class="t">Bedeutung</th><th>Anschläge</th><th class="t">Güte</th><th class="t">Herleitung</th>
+        <th class="t">Taste</th><th class="t">Kappe</th><th class="t">Bedeutung</th><th>Anschläge</th><th class="t">Güte</th>
       </tr></thead>
       <tbody></tbody>
     </table></div>
@@ -217,12 +213,6 @@
       <tbody></tbody>
       <tfoot><tr><td></td><td class="t">Summe</td><td class="t">19 Buchstaben</td><td>82.980</td><td>18.212</td><td>39.401</td><td>329.317 €</td></tr></tfoot>
     </table></div>
-    <div class="notes">
-      <p><b>Was zählt als Anschlag.</b> Die Kasse protokolliert Vorgänge, keine Tasten. Gezählt ist deshalb die Wirkung: eine Bonposition, ein LOG-Eintrag, ein Bon. <b>Gemessen</b> heißt, der Vorgang steht direkt in <code>Kasse.dbo.LOG</code> oder im Positions-Flag; <b>abgeleitet</b> heißt, er ist aus der Wirkung im Bon rekonstruiert; <b>geschätzt</b> gilt nur für die Zifferntasten.</p>
-      <p><b>Positions-Flag.</b> <code>Detail.Flag</code> ist ein Bitfeld: 1 Artikel mit angehängtem Pfand, 2 automatisch angehängte Pfandzeile, 4 Preis-EAN vom Etikett, 8 Kassenwaage, 32 stornierte Position (Paar aus Original und Gegenbuchung), 64 Gebinde-Taste, 512 freie Preiseingabe. Über dieses Flag sind Storno, Waage, Preiseingabe und Gebinde erkennbar.</p>
-      <p><b>Ziffern.</b> Geschätzt aus den Ziffern der getippten Artikelnummern (235.857 PLU-Positionen, 174.856 davon Wiegeware), Mehrfachmengen über die Menge-Taste (43.421) und freien Preiseingaben (87.878, als Centbetrag ohne Komma angenommen). Nicht enthalten: EAN-Eingaben von Hand, Kundennummern, Rabattsätze, Ein- und Auszahlungsbeträge, Beträge beim Bezahlen. Werden Preise mit Komma getippt, entfallen bis zu 87.878 Anschläge auf die Komma-Taste.</p>
-      <p><b>Nicht auf der Tastatur und ohne Bonzeile:</b> G Bedientheke, P @PfandRetour, R @Abschrift, X Heilkräuter; H, Q und W sind im Stamm frei. Z-Bons (2.671) laufen über das Menü, Anmeldungen (1.739) über den Anmeldedialog.</p>
-    </div>
   </section>
 </div>
 
@@ -469,7 +459,7 @@ function tipAZ(k, d){
     <p class="mean">Warengruppentaste: Betrag eingeben, Taste drücken</p>
     <p class="stamm">Taste ${d.pos} · Buchstabe <code>${d.letter}</code> · Stamm „${d.stamm}“ (EAN ${d.ean})</p>
     ${qlab("mess")}${dl(rows)}
-    ${isRet(d) ? '<p class="note">Fast ausschließlich Rücknahmen (negative Menge), daher negativer Umsatz.</p>' : ''}`;
+    ${isRet(d) ? '<p class="note">Fast ausschließlich Rücknahmen.</p>' : ''}`;
 }
 
 function tipFN(k, f){
@@ -481,7 +471,7 @@ function tipFN(k, f){
     <p class="mean">${f.m}</p>
     <p class="stamm">Taste ${pos}</p>
     ${qlab(f.q)}${rows.length ? dl(rows) : ""}
-    ${f.how ? `<p class="note">${f.how}</p>` : (f.q === "none" ? '<p class="note">Hinterlässt weder im Bon noch im Kassen-LOG eine Spur.</p>' : "")}`;
+    ${f.q === "none" ? '<p class="note">Hinterlässt in den Kassendaten keine Spur.</p>' : ""}`;
 }
 
 function moveTip(e){
@@ -505,7 +495,7 @@ function renderTables(){
       const tr = document.createElement("tr");
       const n = f.q === "none" || f.n == null ? "–" : fmtN(f.n);
       tr.innerHTML = `<td class="l">${f.pos}</td><td class="t cap">${capOf[f.pos] || ""}</td><td class="t">${f.m}</td>
-        <td>${n}</td><td class="t q"><i style="background:${QCOL[f.q]}"></i>${QLAB[f.q]}</td><td class="t wrap">${f.how || ""}</td>`;
+        <td>${n}</td><td class="t q"><i style="background:${QCOL[f.q]}"></i>${QLAB[f.q]}</td>`;
       tf.appendChild(tr);
     });
 
