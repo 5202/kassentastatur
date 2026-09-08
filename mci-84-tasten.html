@@ -40,7 +40,30 @@
     font-family:var(--sans);font-size:15px;line-height:1.5;
     padding:28px 20px 60px;
   }
-  .wrap{max-width:1180px;margin:0 auto}
+  .wrap{max-width:1520px;margin:0 auto}
+  .main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:22px;align-items:start}
+  .plu{
+    position:sticky;top:12px;display:flex;flex-direction:column;
+    max-height:calc(100vh - 24px);border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  }
+  .plu .head{padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+  .plu h2{margin:0 0 6px}
+  .plu .sum{display:flex;gap:18px;font-family:var(--mono);font-size:11px}
+  .plu .sum b{display:block;font-size:18px;font-weight:500;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink-inv)}
+  .plu .sum span{letter-spacing:.1em;text-transform:uppercase;color:var(--rail)}
+  .plu input{
+    margin-top:10px;width:100%;background:#0b0e10;color:var(--ink-inv);border:1px solid #2c3237;border-radius:3px;
+    padding:7px 9px;font-family:var(--sans);font-size:13px;
+  }
+  .plu input:focus{outline:none;border-color:var(--led)}
+  .plu .list{overflow:auto;flex:1 1 auto}
+  .plu table{min-width:0;font-size:12.5px}
+  .plu th,.plu td{padding:5px 10px}
+  .plu th{position:sticky;top:0;background:var(--panel);z-index:1}
+  .plu td.l{color:var(--ink-inv)}
+  .plu td.bez{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;color:var(--muted)}
+  .plu td.w::after{content:"⚖";margin-left:4px;font-size:10px;color:var(--rail)}
+  .plu .hint{padding:8px 14px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--rail-dim);border-top:1px solid var(--line)}
   header{
     display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;
     border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:22px;
@@ -143,6 +166,10 @@
   tfoot td{border-top:1px solid var(--line);font-weight:600;color:var(--ink-inv)}
   td.neg{color:#e0a04f}
 
+  @media (max-width:1240px){
+    .main{grid-template-columns:minmax(0,1fr)}
+    .plu{position:static;max-height:60vh}
+  }
   @media (max-width:820px){
     body{padding:14px 10px 44px;font-size:14px}
     h1{font-size:16px}
@@ -172,6 +199,8 @@
     </div>
   </header>
 
+  <div class="main">
+  <div>
   <div class="plate"><div class="grid" id="grid"></div></div>
 
   <div class="legend">
@@ -189,6 +218,24 @@
     <span><i class="sw dot" style="background:var(--q-abg)"></i>abgeleitet</span>
     <span><i class="sw dot" style="background:var(--q-sch)"></i>geschätzt</span>
     <span><i class="sw dot" style="background:var(--ret)"></i>überwiegend Rücknahmen</span>
+  </div>
+  </div>
+  <aside class="plu" aria-label="Artikelnummern">
+    <div class="head">
+      <h2>Getippte Artikelnummern (PLU)</h2>
+      <div class="sum">
+        <div><b id="plu-n">0</b><span>Nummern</span></div>
+        <div><b id="plu-b">0</b><span>Buchungen</span></div>
+        <div><b id="plu-a">0</b><span>Anschläge</span></div>
+      </div>
+      <input type="search" id="plu-q" placeholder="Nummer oder Bezeichnung" autocomplete="off">
+    </div>
+    <div class="list"><table>
+      <thead><tr><th class="t">PLU</th><th class="t">Bezeichnung</th><th>Buchungen</th><th>Anschläge</th></tr></thead>
+      <tbody id="plu-body"></tbody>
+    </table></div>
+    <div class="hint">Anschläge = Ziffern + Enter je Buchung · ⚖ Wiegeware</div>
+  </aside>
   </div>
 
   <div class="tip" id="tip" hidden></div>
@@ -324,7 +371,7 @@ const FN = {
        how:"Bons auf Konto 100 ohne Bar- und EC-Betrag; Kasse.dbo.Konten zählt 111 Posten „Einkauf“."},
   E11:{m:"Artikelnummer-Modus; wird beim Scannen automatisch gesetzt", q:"none",
        how:"Kein eigener Anschlag: die Kasse setzt den Wert selbst, wenn gescannt wird.",
-       extra:[["getippte Artikelnummern (PLU)",235857],["davon Wiegeware (Waage)",174856]]},
+       extra:[["getippte Artikelnummern (PLU)",235857]]},
   E12:{m:"Multiplikator; wird von der Menge-Taste automatisch gesetzt", q:"none",
        how:"Kein eigener Anschlag: die Menge-Taste setzt den Wert selbst."},
   F04:{m:"Mehrfachbuchung: Menge eingeben", q:"abg", n:43421,
@@ -337,7 +384,8 @@ const FN = {
        how:"Bons mit Bar-Betrag in Kasse.dbo.Summe (46.285 rein bar, 19 gemischt mit EC)."},
   F07:{m:"Kartenzahlung (EC)", q:"mess", n:36503,
        how:"Bons mit Scheck-Betrag in Kasse.dbo.Summe (36.484 rein EC, 19 gemischt mit bar)."},
-  F11:{m:"Bestätigen", q:"none", how:"Enter schließt Eingaben ab, hinterlässt aber selbst nichts."},
+  F11:{m:"Bestätigen: schließt jede getippte Artikelnummer ab", q:"abg", n:235857,
+       extra:[["getippte Artikelnummern",235857],["davon Wiegeware",174856]]},
   G04:{m:"Preis einer Position ändern", q:"mess", n:1263,
        how:"Kasse.dbo.LOG Typ 9 „VK alt … neu …“. Freie Preiseingaben vor einer Warengruppentaste (87.878 Positionen mit Flag 512) laufen ohne diese Taste.",
        extra:[["Preiseingaben gesamt",87878],["davon Buchstabentasten",82318]]},
@@ -368,6 +416,9 @@ for(const [z,d] of Object.entries(ZIFFERN)){
     how:"Ziffernhäufigkeit in getippten Artikelnummern, Mehrfachmengen und freien Preiseingaben (Centbetrag ohne Komma). Untere Grenze: EAN-, Kunden-, Rabatt- und Zahlbetrag-Eingaben fehlen.",
     extra:[["aus Artikelnummern",d.plu],["aus Mengen",d.menge],["aus Preisen",d.preis]]};
 }
+
+// Getippte Artikelnummern im Jahr: [PLU, Bezeichnung, Buchungen, davon Waage]
+const PLU = [["600","Äpfel, verschied",17530,17434],["605","Bananen",12516,12441],["465","Karotten lose",11858,11792],["460","Schlangengurken",6368,0],["515","Paprika rot",5142,5101],["595","Zwiebeln, gelb",4563,4528],["525","Steinchampignon",4227,4211],["519","Spitzpaprika",4174,4134],["590","Zucchini grün",4138,4104],["581","Strauchtomaten",4109,4047],["698","Zitronen",3993,3942],["690","Orangen",3876,3834],["401","Bio-Eier lose",3215,0],["475","Kartoffel lose",3110,3070],["620","Birnen",3100,3077],["541","Feldsalat",2944,2904],["510","Lauch",2927,2913],["462","Minigurken",2893,2878],["628","Avocado",2843,0],["685","Clementinen",2769,2738],["481","Brokkoli",2767,2724],["457","Fenchel",2727,2700],["633","Ingwer",2600,2577],["530","Radieschen",2534,0],["582","San Marzano",2423,2386],["691","Saftorangen",2413,2382],["540","Chicoree",2400,2370],["500","Petersilie Bund",2371,0],["592","Zwiebeln rot",2348,2322],["565","Sellerieknollen",2319,2286],["493","Kohlrabi",2288,0],["618","Heidelbeeren",2247,2176],["593","Knoblauch",2202,2166],["561","Rucola lose",2095,2073],["585","Cocktailtomaten",1912,1870],["516","Paprika gelb",1850,1821],["550","Batavia grün",1788,0],["584","San Marzano",1773,1732],["545","Radicchio",1684,1667],["535","Rote Bete",1640,1609],["553","Eichblatt rot",1613,0],["529","Salat-Mix",1592,1567],["556","Kopfsalat grün",1569,0],["674","Trauben rose",1556,1530],["552","Eichblatt grün",1514,0],["640","Kiwi",1426,0],["466","Karotten bunt",1425,1418],["576","Spinat",1330,1302],["672","Traube blau",1325,1285],["520","Pastinaken",1320,1274],["587","Wurzelpetersilie",1293,1256],["495","Hokkaido",1276,1258],["490","Blumenkohl",1266,0],["649","Wassermelone",1246,1233],["554","Eissalat",1223,0],["487","Spitzkohl",1223,1180],["599","Lauchzwiebeln",1215,0],["610","Erdbeeren",1202,1177],["517","Paprika grün",1193,1171],["613","Himbeeren",1188,1159],["598","Schalotten",1166,1132],["478","Süßkartoffeln",1162,1136],["518","Pepperoni mild/s",1146,1112],["452","Auberginen",1137,1113],["557","Kopfsalat rot",1098,0],["567","Stauden/Bleichse",1077,461],["660","Aprikosen",1026,1019],["583","Fleischtomate",1014,984],["670","Trauben weiß",1005,978],["641","Gold-Kiwi,Rot",1004,0],["662","Nektarinen",997,973],["526","Shiitake-Pilze",981,947],["476","Frühkartoffeln",876,870],["506","Basilikum im Top",876,0],["555","Endivien/Frisee",865,0],["680","Grapefruit rot",846,0],["505","Schnittlauch",843,0],["484","Rosenkohl",784,770],["819","Hühnerbrust",784,0],["606","Bananen, Aktion",777,763],["635","Mango",745,0],["524","Kräuterseitling",739,714],["664","Pfirsich",733,714],["697","Limetten",701,0],["483","Grünkohl",677,657],["638","Kaki",659,0],["671","Traube kernlos w",656,643],["411","lose Eier Berghe",644,0],["512","Mangold",638,621],["630","Datteln Medjhul",625,599],["632","Granatapfel",613,0],["559","Romana Salat",602,0],["531","Rettich weiß",584,4],["654","Walnüsse",582,577],["482","Chinakohl",563,556],["692","Blutorangen Moro",557,549],["669","Kirschen",542,533],["477","Butterkartoffeln",538,519],["932","Eierschachtel le",532,0],["668","Zwetschgen",516,514],["509","Koriander Bund",512,0],["427","Ziegenfrischkäse",509,0],["521","Sweet Bite",506,495],["858","Putenschnitzel",502,0],["818","Hühnerschenkel",494,0],["2973","Pfandflasche",494,0],["3032","Lauretana 6x1,0l",484,0],["1500","Grußkarte",482,0],["455","Buschbohnen",482,479],["507","Kräutertöpfe",469,0],["636","Maracuja groß",428,0],["486","Wirsing",425,412],["688","Satsumas",422,414],["523","Pak  Choi",411,401],["695","Kumquats",399,380],["665","Flach-Pfirsich",391,381],["537","Rote Bete gegart",389,0],["639","Feigen frisch",384,0],["624","Kurkuma",366,360],["601","Apfel Aktion",365,346],["580","Tomaten rund",361,347],["407","Eier aus Berghei",360,0],["821","Hähnchenleber",356,0],["543","Löwenzahnsalat",344,337],["485","Weißkraut",334,320],["480","Blaukraut",332,323],["546","Zuckerhut-Salat",326,314],["617","Brombeeren",323,307],["551","Batavia rot",319,0],["1501","Postkarte",318,0],["503","Dill",314,0],["408","Eier 10er",305,0],["666","Pflaumen rot",305,299],["836","Gefl. Karkassen",299,0],["694","Tarocco-Orangen",293,286],["682","Grapefruit weiß",274,0],["622","Ananas Stückprei",273,0],["532","Rettich schwarz",269,260],["642","Mango beumgereif",261,0],["645","Galia",258,249],["817","Hühnerflügel",249,0],["527","Kastanienseitlin",229,211],["687","Mandarine",225,225],["570","Spargel grün",223,212],["614","Johannisbrot",223,218],["496","versch. Kürbisse",222,216],["421","Nirwana Herzen",217,0],["13148","Pfand 0.15 EUR",207,0],["760","Socken PS1",200,0],["3064","Weber Streuo. Ap",187,0],["403","Eier gefärbt",180,0],["650","Erdnüsse",176,170],["399","Bio Saatgut vers",171,0],["572","Spargel weiß",170,160],["825","Geflügel-Leberkä",160,0],["677","Ingwer, frisch",156,154],["514","Meerrettich",143,140],["440","Physalis",136,130],["1502","Allgäuer Heilkrä",134,0],["528","Pfifferlinge",133,130],["637","Papaya",130,89],["643","Avocado klein",126,1],["3010","Leo-Quelle still",124,0],["2974","Pfandflasche",123,0],["468","Karottenbunde",122,0],["459","Zuckermais gegar",120,0],["822","Geflügel-Gelbwur",119,0],["589","Zucchini gelb",119,113],["320","Geschirr",117,0],["655","Rhabarber",116,112],["646","Honigmelone",116,111],["409","Schoko-Eier",115,0],["300","Topfpflanzen",114,0],["684","Steck-/ Kohlrübe",112,103],["499","Bärlauch lose",103,101],["588","Knoblauch,frisch",102,102],["663","Nektarinen flach",102,93],["470","Kartoffeln",99,0],["3020","Plose natur 6x1,",99,0],["422","Samba Schoko Kug",95,0],["3050","Mineralwasser La",93,0],["3040","Hornberger Leben",90,0],["3037","Black Forest sti",89,0],["607","Kochbanane",88,87],["586","Topinambur",86,81],["3012","St. Georgs-Quell",85,0],["608","Babybanane",85,80],["428","Ziegenfrischkäse",83,0],["533","Rettich rot",81,37],["429","Ziegenjoghurt Bl",76,0],["426","Ziegen-Quark Blu",74,0],["3011","Leo-Quelle mediu",74,0],["616","Stachelbeeren",73,71],["653","Maronen",73,72],["3066","Weber Streuobst",72,0],["547","Postelein-Salat",72,65],["2972","Pfandflasche",69,0],["880","Walnusskerne, re",69,0],["661","Mirabellen",68,66],["3033","Black Forest 6x1",65,0],["801","Bitterstern-Trüf",65,0],["696","Litschi",65,64],["501","Bärlauch",62,0],["502","Winterkresse",60,0],["330","Eis regional",59,0],["2944","Pfand 6er-Ka.",56,0],["513","Spitzpapika grün",55,52],["425","Ziegen-Feta in Ö",55,0],["3068","Weber Apfel-Quit",55,0],["3015","Licht-Quelle sti",53,0],["826","Geflügel-Wiener",50,0],["456","Stangenbo.",50,45],["492","Kohlrabi blau",50,0],["3038","Black Forest med",50,0],["491","Romanesco",49,0],["571","Spargel grün Bun",48,0],["828","Gefl. Leberwurst",47,0],["704","Jumbo-Pistazien",46,46],["575","Navet/Goldball",45,28],["912","Schafmilchseife",44,0],["3013","Ich bin Quelle",44,0],["3078","Bioland Apfelsaf",42,0],["562","Schwarzwurzeln",40,35],["3065","Weber Streuobst",39,0],["970","Universalerde 15",39,0],["406","Bio-Eier 6er, Kl",37,0],["623","Birne Aktion",37,37],["959","Peru Tropical Mo",36,0],["544","Blumen im Topf",36,0],["902","Teelicht Bienenw",35,0],["820","Hähnchen ganz",34,0],["3017","Mond-Quelle stil",34,0],["351","Frischer Tofu Th",33,0],["5380","Pfand Lauretana",33,0],["325","Schäfflerbach We",33,0],["944","Bios-Hausmischun",32,0],["675","Traube Red Globe",32,27],["563","Erbsen i.d.S.",31,30],["3073","Stauden-Apfelsaf",31,0],["848","Geflügel Debrezi",30,0],["815","Puten-Bolognese",30,0],["824","Geflügel-Paprika",29,0],["436","RennKraut",29,0],["973","Naturschutzerde",29,0],["816","Puten-Gulasch",28,0],["871","Atitlan Espresso",28,0],["569","Rote Bete Bund",28,0],["823","Geflügel-Lyoner",27,0],["410","Bio-Eier 10er, K",27,0],["30","Pfand 2,30 Eur",27,0],["594","Zuckermais",26,0],["854","Bio-Rinderfond",25,0],["498","Spaghetti-Kürbis",24,22],["615","Johannisbeeren",24,24],["857","GF-Gschwollene",24,0],["431","Kürbiskerne regi",23,23],["946","Wiener Melange M",22,0],["873","Kaffee Atitlan",22,0],["651","Haselnüsse i. d.",22,12],["813","Bio-Geflügelfond",22,0],["830","Gefl. Pressack w",20,0],["872","Atitlan Espresso",20,0],["3041","Hornberger Quell",20,0],["834","Weißwurst",20,0],["943","Morentio-Kaffee",19,0],["3079","Bioland Apfelsaf",19,0],["3025","Adelholzener 12e",19,0],["3047","Kristall-Wasser",19,0],["780","BW- Zylinder mit",19,0],["3016","Sonnen-Quelle st",18,0],["870","Atitlan Espresso",18,0],["3072","Stauden-Apfelsaf",18,0],["782","BW-Kerze Zylinde",17,0],["3067","Weber Streuobst",17,0],["3018","Vollmond-Abfüllu",17,0],["812","Bio-Hühnerbrühe",17,0],["876","Sidamo Classic g",17,0],["574","Speiserüben",17,1],["3021","Plose spritzig 6",17,0],["783","BW-Kerze Tropfen",17,0],["942","Morenito-Kaffee",17,0],["875","Red Label Espres",17,0],["596","Zwiebeln weiß",16,15],["301","Schnittblumen",16,0],["3034","Black Forest 20",16,0],["900","Parafin-Teelicht",15,0],["974","Aussaaterde 15 l",15,0],["753","BW-Kerze Herz",14,0],["784","Honig Geschenkka",14,0],["758","BW-Kerze Stern",13,0],["350","Frischer Tofu ma",13,0],["415","Haselnuss-Nougat",13,0],["827","Brätknödel",13,0],["829","Gefl. Leberkäse",13,0],["839","Geflügelgrillwur",12,0],["453","Aubergine Graffi",12,11],["941","Äthiopien Moreni",12,0],["752","BW-Kerze Kiefern",12,0],["877","Sidamo Classic",12,0],["972","Universalerde 45",11,0],["926","Arganium Creme L",11,0],["831","Gefl. Pressack r",11,0],["846","Leberwurst fein",11,0],["432","Minze",11,0],["652","Mandeln i. d. Sc",11,9],["856","GF-Alpenländer",11,0],["916","Räucherkohle 33",11,0],["804","Bio-Ringelblumen",10,0],["802","Bio-Ringelblumen",10,0],["420","Glückskäfer gefü",10,0],["693","Bitterorangen",10,9],["755","BW-Kerze Zylinde",10,0],["80","Pfand 12er-Kast.",10,0],["931","Servicegebühr",10,0],["3071","Stauden-Apfelsaf",10,0],["759","BW-Kerze Kiefern",10,0],["31","Pfandkasten 3,00",10,0],["832","Gefl. Pressack r",10,0],["786","Bienewachskerze",10,0],["838","Leberkäse im Gla",9,0],["33308","Kistenpfand La G",9,0],["950","Melaleukaöl",9,0],["849","Schweineschmalz",9,0],["837","Leberwurst grob",9,0],["2977","Pfand Tofugläser",8,0],["945","Indien Poabs Boh",8,0],["433","Rosmarin",8,0],["803","Bio-Ringelblumen",8,0],["914","Bienenwachs in W",8,0],["412","Eier aus Berghei",7,0],["799","Bio Arnikasalbe",7,0],["340","Eis aus Inningen",7,0],["990","Wassereis",7,0],["678","Quitten",7,7],["469","Süßkartoffel, li",7,0],["805","Bio Lipstick veg",7,0],["913","Schafmilchseife",6,0],["472","Kartoffeln 12,5k",6,0],["808","Bio-Arnikasalbe",6,0],["921","Kaufladenartikel",6,0],["754","BW-Kerze Krippe",6,0],["811","Bio-Ringelblumen",6,0],["3069","Weber Apfel-Quit",6,0],["2976","Kistenpfand 1,50",6,0],["634","Kokosnuss",6,0],["807","Bio-Tamanusalbe",5,0],["749","BW-Kerze Bienenk",5,0],["430","Kürbiskerne regi",5,0],["929","Geschenkbox f. H",5,0],["53053","Krokusse lila im",5,0],["956","Waschmittelkonze",5,0],["3046","Kristall-Wasser",5,0],["928","Kerzenständer Ke",5,0],["847","Geflügel Biersch",5,0],["800","\"Lieblings\" Lave",5,0],["2975","Pfand Bügelflasc",5,0],["3024","Adelholzener 0,5",5,0],["568","Sellerie m.G.",5,0],["648","Wassermelone",5,0],["474","12,5 kg Kartoffe",5,0],["878","Atitlán Classic",4,0],["542","Asia-Salat",4,4],["504","Zitronengras",4,0],["971","Universalerde 7,",4,0],["980","Wasch-Soda",4,0],["756","BW-Kerze Glocke",4,0],["965","Dinkelmehl 630,",4,0],["741","TK-Suppenhuhn Br",4,4],["798","Bio-Ringelblumen",4,0],["447","Portabello",3,3],["979","Mandel-Pflegeöl",3,0],["966","Emmermehl 630, S",3,0],["435","Kresse",3,0],["631","Datteln Schale",3,0],["3075","Stauden Apfel-Ho",3,0],["511","Tomatenpflanzen",3,0],["20364","Leerkiste-Wein /",3,0],["566","Stangensellerie",3,2],["947","Mexiko Kaffee Bo",3,0],["450","Artischocken",3,2],["923","Zimt-Einlege- so",3,0],["975","Kräuselband farb",2,0],["471","Kartoffeln 5kg",2,0],["402","Demeter-Eier los",2,0],["28646","Suppenhuhn TK",2,2],["751","BW-Kerze Osterei",2,0],["757","BW-Kerze Tannenb",2,0],["810","Bio-Ringelblumen",2,0],["769","Zirbenkissen",2,0],["318","Teeglas 'Diana'",2,0],["911","Schafmilchseife",2,0],["3082","Apfel-Aroniasaft",2,0],["84","Pfandki. 20x0,5l",2,0],["835","Käsegriller",2,0],["3019","St. Leonhardsque",2,0],["806","Bio-Lavendelsalb",2,0],["910","Schafmilchseife",2,0],["903","Öko-Teelicht aus",2,0],["497","Halloween-Kürbis",2,2],["925","Zimt-Einlege- so",2,0],["998","Brotbeutel groß",2,0],["859","Geflügelgrillwur",2,0],["936","Schnuller M  4-1",2,0],["999","Brottasch klein",2,0],["549","Austernpilze red",2,0],["400","Radieschen lila",2,0],["3060","Apfelsaft naturt",2,0],["951","Vogelfutterhaus",1,0],["852","3er Hildegard- G",1,0],["3080","Apfelsaft-Aktion",1,0],["770","Filzuntersetzer",1,0],["461","Landgurken",1,1],["762","Socken PS3",1,0],["785","Bienewachskerze",1,0],["473","5 kg Kartoffeln",1,0],["989","M + N-Maske 'Sch",1,0],["334","Pistazien-Eis",1,0],["809","Bio-Lavendelöl",1,0],["539","Erdbeeren 500",1,0],["796","Arnikasalbe und",1,0],["522","Zucchini-Pflanze",1,0],["560","Rucola, Bunde/Sc",1,0],["901","Teelicht-Glas",1,0],["952","Nistkasten 'Meis",1,0],["591","Erbsen i.d.S.",1,0],["12456","SENFSAAT, schwar",1,0],["939","Hirseschalen",1,0],["681","Grapefruit Sweet",1,0],["29806","Pfandkiste 20x0,",1,0],["930","Glycerin",1,0],["667","Clementinen Kist",1,1],["940","Etikettenablöser",1,0],["312","Becher 'Peppino'",1,0],["964","Stearin-Kerze, 6",1,0],["994","Bienenwachstuch",1,0],["434","Thymian",1,0],["329","Eierlikör-Eis",1,0],["536","Gelbe Bete",1,1],["874","Atitlán Classic",1,0],["3074","Apfel-Kirschsaft",1,0],["3077","Apfel-Johannisbe",1,0],["996","Bienenwachstuch",1,0],["833","Suppenhuhn",1,0],["935","Schnuller S  0-4",1,0],["4500","Duftkerze 5x5 cm",1,0],["328","Stracciatella-Ei",1,0],["315","Becher 'Lavendel",1,0],["710","Weihnachtskugel",1,0],["313","Teekanne 'Ava'",1,0],["597","Gemüsezwiebeln",1,0],["612","Heidelbeeren 1kg",1,0],["627","Ananas tropenrei",1,0],["985","Salzkristall Tee",1,0]];
 
 const byPos = {};
 for(const [l,d] of Object.entries(AZ)){ d.letter = l; byPos[d.pos] = d; }
@@ -507,7 +558,20 @@ function renderTables(){
     tb.appendChild(tr);
   });
 }
+function renderPLU(q){
+  const tb = document.getElementById("plu-body");
+  const f = (q || "").trim().toLowerCase();
+  const rows = PLU.map(([ean,bez,n,w]) => ({ean,bez,n,w,a:n*(ean.length+1)}))
+    .filter(r => !f || r.ean.includes(f) || r.bez.toLowerCase().includes(f))
+    .sort((a,b) => b.a - a.a);
+  tb.innerHTML = rows.map(r => `<tr><td class="l">${r.ean}</td><td class="t bez${r.w > r.n/2 ? ' w' : ''}" title="${r.bez}">${r.bez}</td><td>${fmtN(r.n)}</td><td>${fmtN(r.a)}</td></tr>`).join("");
+  document.getElementById("plu-n").textContent = fmtN(rows.length);
+  document.getElementById("plu-b").textContent = fmtN(rows.reduce((s,r) => s + r.n, 0));
+  document.getElementById("plu-a").textContent = fmtN(rows.reduce((s,r) => s + r.a, 0));
+}
+document.getElementById("plu-q").addEventListener("input", e => renderPLU(e.target.value));
 render();
 renderTables();
+renderPLU("");
 </script>
 </body></html>
