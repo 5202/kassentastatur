@@ -19,12 +19,17 @@
     --line:#262b2f;
     --panel:#111417;
     --cap-dim:#2a2f33;
+    --cap-zero:#3a4147;
     --heat-0:#d9dbd6;   /* 1–9 */
     --heat-1:#e7d8a4;   /* 10–99 */
     --heat-2:#e9b56a;   /* 100–999 */
     --heat-3:#e38a52;   /* 1 000–9 999 */
-    --heat-4:#d9573f;   /* ≥ 10 000 */
-    --ret:#7b8fd0;      /* Rücknahme-Tasten (Pfand, Gutschein) */
+    --heat-4:#d9573f;   /* 10 000–99 999 */
+    --heat-5:#b23a3a;   /* ≥ 100 000 */
+    --ret:#7b8fd0;
+    --q-mess:#4fe05a;
+    --q-abg:#e0c34f;
+    --q-sch:#c9a3dc;
     --mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
     --sans: "Helvetica Neue", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   }
@@ -42,7 +47,7 @@
   }
   h1{font-size:19px;font-weight:600;letter-spacing:-.01em;margin:0;text-wrap:balance}
   .sub{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--rail);margin-top:4px}
-  .counts{display:flex;gap:22px;font-family:var(--mono);font-size:11px}
+  .counts{display:flex;gap:22px;font-family:var(--mono);font-size:11px;flex-wrap:wrap}
   .counts b{display:block;font-size:22px;font-weight:500;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
   .counts span{letter-spacing:.12em;text-transform:uppercase;color:var(--rail)}
   .c-hi b{color:var(--led)}
@@ -64,66 +69,81 @@
   .key{
     position:relative;border:0;padding:5px 6px;border-radius:4px;
     font-family:var(--sans);font-size:12px;font-weight:600;line-height:1.15;color:var(--ink);
-    display:flex;align-items:center;justify-content:center;text-align:center;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1px;
     box-shadow:inset 0 -3px 0 rgba(0,0,0,.22), 0 1px 2px rgba(0,0,0,.5);
-    word-break:break-word;user-select:none;cursor:default;
+    word-break:break-word;user-select:none;cursor:pointer;
     transition:transform .08s ease;
   }
+  .key:hover,.key:focus-visible{transform:translateY(-2px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.22), 0 6px 14px rgba(0,0,0,.6)}
   .key:focus-visible{outline:2px solid var(--led);outline-offset:2px}
-  /* Tasten ohne Buchstabenfunktion: gedämpft, nur die Beschriftung */
-  .key.andere{background:var(--cap-dim);color:var(--rail);font-weight:500;font-size:11px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)}
+  .key .n{font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+  .key .l{font-family:var(--mono);font-size:9px;letter-spacing:.12em;opacity:.6;line-height:1;text-transform:uppercase}
+  .key.klein .l{font-size:8px;letter-spacing:.06em;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  /* keine Spur in den Daten: dunkle Kappe, nur Beschriftung */
+  .key.leer{background:var(--cap-dim);color:var(--rail);font-weight:500;font-size:11px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.35)}
+  .key.leer .l{font-family:var(--sans);font-size:11px;opacity:1;letter-spacing:0;text-transform:none}
+  /* messbar, aber null */
+  .key.null{background:var(--cap-zero);color:var(--muted)}
+  .key.null .n{color:var(--ink-inv)}
   .key.frei{
-    background:var(--well);color:var(--rail-dim);
+    background:var(--well);color:var(--rail-dim);cursor:default;
     box-shadow:inset 0 2px 5px rgba(0,0,0,.85), inset 0 0 0 1px #23282c;
     font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.1em;
   }
-  /* Buchstabentasten: Zahl groß, Buchstabe klein */
-  .key.az{cursor:pointer;flex-direction:column;gap:1px}
-  .key.az:hover,.key.az:focus-visible{transform:translateY(-2px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.22), 0 6px 14px rgba(0,0,0,.6)}
-  .key.az .n{font-family:var(--mono);font-size:15px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
-  .key.az .l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;opacity:.6;line-height:1}
-  .key.az .ret{position:absolute;top:4px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--ret);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+  .key.frei:hover{transform:none;box-shadow:inset 0 2px 5px rgba(0,0,0,.85), inset 0 0 0 1px #23282c}
+  /* Gütepunkt oben rechts */
+  .key .q{position:absolute;top:4px;right:5px;width:6px;height:6px;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+  .key .q.mess{background:var(--q-mess)}
+  .key .q.abg{background:var(--q-abg)}
+  .key .q.sch{background:var(--q-sch)}
+  .key .q.ret{background:var(--ret)}
   .code{position:absolute;bottom:2px;left:4px;font-family:var(--mono);font-size:8px;font-weight:400;opacity:.34;letter-spacing:.04em}
-  .key.andere .code,.key.frei .code{opacity:.5}
+  .key.leer .code,.key.frei .code{opacity:.5}
 
   /* Tooltip */
   .tip{
     position:fixed;z-index:10;pointer-events:none;
     background:var(--panel);border:1px solid #333a3f;border-radius:6px;
-    padding:10px 12px;min-width:230px;max-width:300px;
+    padding:10px 12px;min-width:240px;max-width:320px;
     box-shadow:0 10px 30px rgba(0,0,0,.7);font-size:12.5px;line-height:1.45;
   }
   .tip[hidden]{display:none}
   .tip .cap{font-size:15px;font-weight:600;color:var(--ink-inv);margin:0}
-  .tip .stamm{color:var(--muted);margin:0 0 8px;font-size:12px}
+  .tip .mean{color:var(--ink-inv);margin:0 0 6px;font-size:12.5px}
+  .tip .stamm{color:var(--muted);margin:0 0 8px;font-size:11.5px}
   .tip .stamm code{font-family:var(--mono);color:var(--ink-inv)}
+  .tip .qlab{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rail);margin:0 0 6px}
+  .tip .qlab i{width:6px;height:6px;border-radius:50%}
   .tip dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:0}
   .tip dt{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rail);align-self:baseline}
   .tip dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-inv)}
   .tip dd.big{font-size:15px;font-weight:600}
   .tip .note{margin:8px 0 0;color:var(--muted);font-size:11.5px;border-top:1px solid var(--line);padding-top:6px}
 
-  /* Legende und Tabelle */
   .legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:16px 0 0;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--rail);align-items:center}
   .legend span{display:flex;align-items:center;gap:6px}
+  .legend .gap{width:10px}
   .sw{width:14px;height:11px;border-radius:2px;flex:none;box-shadow:inset 0 -2px 0 rgba(0,0,0,.25)}
-  .sw.dot{width:6px;height:6px;border-radius:50%;background:var(--ret);margin:0 4px}
+  .sw.dot{width:6px;height:6px;border-radius:50%;margin:0 4px;box-shadow:none}
 
   section{margin-top:26px}
   h2{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--rail);margin:0 0 10px;font-weight:400}
   .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
-  table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
-  th,td{padding:7px 12px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:700px}
+  th,td{padding:7px 12px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;vertical-align:top}
   th{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--rail);font-weight:400;border-bottom:1px solid var(--line)}
-  th:nth-child(-n+3),td:nth-child(-n+3){text-align:left}
+  th.t,td.t{text-align:left}
+  td.wrap{white-space:normal;min-width:260px;max-width:520px;color:var(--muted);font-size:12px}
   td.l{font-family:var(--mono);color:var(--muted)}
   td.cap{font-weight:600}
   td.stamm{color:var(--muted)}
+  td.q{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  td.q i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:middle}
   tbody tr:nth-child(odd){background:rgba(255,255,255,.02)}
   tbody tr:hover{background:rgba(79,224,90,.06)}
   tfoot td{border-top:1px solid var(--line);font-weight:600;color:var(--ink-inv)}
   td.neg{color:#e0a04f}
-  .notes{color:var(--muted);font-size:13px;max-width:68ch;margin:12px 0 0}
+  .notes{color:var(--muted);font-size:13px;max-width:70ch;margin:12px 0 0}
   .notes p{margin:0 0 6px}
   .notes code{font-family:var(--mono);font-size:12px;color:var(--ink-inv)}
 
@@ -134,7 +154,7 @@
     .plate{padding:10px;border-radius:6px}
     .grid{grid-template-columns:20px repeat(12, 56px);grid-auto-rows:52px;gap:4px;min-width:0}
     .key{font-size:10px;padding:3px;border-radius:3px}
-    .key.az .n{font-size:12.5px}
+    .key .n{font-size:12px}
     .code{font-size:7px;bottom:1px;left:2px}
     .tip{max-width:calc(100vw - 20px)}
   }
@@ -145,45 +165,63 @@
 <div class="wrap">
   <header>
     <div>
-      <h1>Buchstabentasten A–Z: Anschläge auf der MCI 84</h1>
+      <h1>Anschläge je Taste auf der MCI 84</h1>
       <div class="sub">Göggingen · Kasse 103 + 105 · 08.09.2025 – 07.09.2026 · Ist-Belegung vom Foto</div>
     </div>
     <div class="counts">
-      <div class="c-hi"><b id="n-pos">82.980</b><span>Positionen A–Z</span></div>
-      <div><b>39.401</b><span>Bons</span></div>
-      <div><b>10,6 %</b><span>aller Positionen</span></div>
-      <div><b id="n-keys">19</b><span>Tasten benutzt</span></div>
+      <div><b>85.013</b><span>Bons</span></div>
+      <div><b>780.085</b><span>Positionen</span></div>
+      <div class="c-hi"><b id="n-mit">0</b><span>Tasten mit Zahl</span></div>
+      <div><b id="n-ohne">0</b><span>ohne Spur</span></div>
     </div>
   </header>
 
   <div class="plate"><div class="grid" id="grid"></div></div>
 
   <div class="legend">
-    <span>Positionen im Jahr</span>
+    <span>Anschläge</span>
     <span><i class="sw" style="background:var(--heat-0)"></i>1–9</span>
     <span><i class="sw" style="background:var(--heat-1)"></i>10–99</span>
     <span><i class="sw" style="background:var(--heat-2)"></i>100–999</span>
     <span><i class="sw" style="background:var(--heat-3)"></i>1 000–9 999</span>
-    <span><i class="sw" style="background:var(--heat-4)"></i>ab 10 000</span>
-    <span><i class="sw dot"></i>überwiegend Rücknahmen</span>
-    <span><i class="sw" style="background:var(--cap-dim)"></i>keine Buchstabenfunktion</span>
+    <span><i class="sw" style="background:var(--heat-4)"></i>10 000–99 999</span>
+    <span><i class="sw" style="background:var(--heat-5)"></i>ab 100 000</span>
+    <span><i class="sw" style="background:var(--cap-zero)"></i>messbar, aber null</span>
+    <span><i class="sw" style="background:var(--cap-dim)"></i>keine Spur in den Daten</span>
+    <span class="gap"></span>
+    <span><i class="sw dot" style="background:var(--q-mess)"></i>gemessen</span>
+    <span><i class="sw dot" style="background:var(--q-abg)"></i>abgeleitet</span>
+    <span><i class="sw dot" style="background:var(--q-sch)"></i>geschätzt</span>
+    <span><i class="sw dot" style="background:var(--ret)"></i>überwiegend Rücknahmen</span>
   </div>
 
   <div class="tip" id="tip" hidden></div>
 
   <section>
-    <h2>Alle Buchstabentasten, nach Anschlägen</h2>
+    <h2>Funktions-, Rabatt- und Zifferntasten</h2>
+    <div class="tbl"><table id="tbl-f">
+      <thead><tr>
+        <th class="t">Taste</th><th class="t">Kappe</th><th class="t">Bedeutung</th><th>Anschläge</th><th class="t">Güte</th><th class="t">Herleitung</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Buchstabentasten A–Z (Warengruppen), nach Anschlägen</h2>
     <div class="tbl"><table id="tbl">
       <thead><tr>
-        <th>Taste</th><th>Kappe heute</th><th>Artikelstamm (EAN)</th>
+        <th class="t">Taste</th><th class="t">Kappe heute</th><th class="t">Artikelstamm (EAN)</th>
         <th>Positionen</th><th>davon Rücknahme/Storno</th><th>Bons</th><th>Umsatz</th>
       </tr></thead>
       <tbody></tbody>
-      <tfoot><tr><td></td><td>Summe</td><td>19 Buchstaben</td><td>82.980</td><td>18.212</td><td>39.401</td><td>329.317 €</td></tr></tfoot>
+      <tfoot><tr><td></td><td class="t">Summe</td><td class="t">19 Buchstaben</td><td>82.980</td><td>18.212</td><td>39.401</td><td>329.317 €</td></tr></tfoot>
     </table></div>
     <div class="notes">
-      <p>Eine Position in <code>Kasse.dbo.Detail</code> mit einem Buchstaben als EAN zählt als ein Anschlag; Mehrfachbuchungen über die Mengentaste zählen einmal. Bäckerei und Käse tragen zusammen 72 % aller Buchstaben-Anschläge.</p>
-      <p>Pfand 7 %, Pfand 19 % und Gutschein sind fast nur Rücknahmen (negative Menge), deshalb negativer Umsatz. Nicht auf der Tastatur und ohne Bonzeile im Zeitraum: G Bedientheke, P @PfandRetour, R @Abschrift, X Heilkräuter; H, Q und W sind im Stamm frei.</p>
+      <p><b>Was zählt als Anschlag.</b> Die Kasse protokolliert Vorgänge, keine Tasten. Gezählt ist deshalb die Wirkung: eine Bonposition, ein LOG-Eintrag, ein Bon. <b>Gemessen</b> heißt, der Vorgang steht direkt in <code>Kasse.dbo.LOG</code> oder im Positions-Flag; <b>abgeleitet</b> heißt, er ist aus der Wirkung im Bon rekonstruiert; <b>geschätzt</b> gilt nur für die Zifferntasten.</p>
+      <p><b>Positions-Flag.</b> <code>Detail.Flag</code> ist ein Bitfeld: 1 Artikel mit angehängtem Pfand, 2 automatisch angehängte Pfandzeile, 4 Preis-EAN vom Etikett, 8 Kassenwaage, 32 stornierte Position (Paar aus Original und Gegenbuchung), 64 Gebinde-Taste, 512 freie Preiseingabe. Über dieses Flag sind Storno, Waage, Preiseingabe und Gebinde erkennbar.</p>
+      <p><b>Ziffern.</b> Geschätzt aus den Ziffern der getippten Artikelnummern (235.857), Mehrfachmengen (43.421) und freien Preiseingaben (87.878, als Centbetrag ohne Komma angenommen). Nicht enthalten: EAN-Eingaben von Hand, Kundennummern, Rabattsätze, Ein- und Auszahlungsbeträge, Beträge beim Bezahlen. Werden Preise mit Komma getippt, entfallen bis zu 87.878 Anschläge auf die Komma-Taste.</p>
+      <p><b>Nicht auf der Tastatur und ohne Bonzeile:</b> G Bedientheke, P @PfandRetour, R @Abschrift, X Heilkräuter; H, Q und W sind im Stamm frei. Z-Bons (2.671) laufen über das Menü, Anmeldungen (1.739) über den Anmeldedialog.</p>
     </div>
   </section>
 </div>
@@ -207,8 +245,8 @@ const IST = [
   ["G",6,"Drucken Bezahlen","belegt",2,1],["G",8,"0"],["G",9,"00"],["G",10,","]
 ];
 
-// Buchstabe → Position auf der Tastatur, Bezeichnung im Artikelstamm (BOArt.dbo.Artikel, EAN negativ),
-// Kennzahlen aus Kasse.dbo.Detail 08.09.2025–07.09.2026: Positionen, Rücknahme/Storno, Bons, Umsatz.
+// Buchstabentasten: Bezeichnung im Artikelstamm (BOArt.dbo.Artikel, EAN negativ),
+// Kennzahlen aus Kasse.dbo.Detail: Positionen, Rücknahme/Storno, Bons, Umsatz.
 const AZ = {
   A:{pos:"A02",ean:-191,stamm:"Lebensmittel 7 %",n:950,ret:95,bons:874,ums:3092.63},
   B:{pos:"A03",ean:-190,stamm:"Käse",n:23474,ret:51,bons:17770,ums:199974.91},
@@ -230,18 +268,132 @@ const AZ = {
   Y:{pos:"C11",ean:-167,stamm:"Pfand 7%",n:6417,ret:6313,bons:6217,ums:-2751.95},
   Z:{pos:"C12",ean:-166,stamm:"Pfand 19%",n:10159,ret:9440,bons:7610,ums:-10178.27}
 };
-const TOTAL = 82980;
+const AZ_TOTAL = 82980;
+
+// Funktions-, Rabatt- und Zifferntasten. q: mess | abg | sch | null | none
+// n = Anschläge im Jahr (null = keine Spur), how = Herleitung, extra = weitere Kennzahlen [[label, wert]]
+const FN = {
+  A01:{m:"Abbrechen, Eingabe verwerfen", q:"none"},
+  B01:{m:"Windows-Taste, Systemebene", q:"none"},
+  C01:{m:"Arbeitszeiterfassung: Kommen / Gehen stempeln", q:"mess", n:9608,
+       how:"Stempelungen in BO.dbo.aze (LadenID BIOS) mit Kommt im Zeitraum.",
+       extra:[["Kommt",4856],["Geht",4752],["Personen",34]]},
+  D01:{m:"Funktionsumschaltung (Zweitbelegung)", q:"none"},
+  E01:{m:"Laufenden Bon zwischenspeichern", q:"none", how:"Geparkte Bons hinterlassen keinen eigenen Eintrag."},
+  F01:{m:"Cursor links", q:"none"},
+  F02:{m:"Cursor hoch", q:"none"},
+  F03:{m:"Cursor rechts", q:"none"},
+  G02:{m:"Cursor runter", q:"none"},
+  G01:{m:"Kassierer abmelden", q:"mess", n:1498,
+       how:"Kasse.dbo.LOG Typ 2 mit Text „Abmeldung“ oder „abmelden“.",
+       extra:[["Anmeldungen",1739],["Anmeldefehler",16]]},
+  G03:{m:"Feldwechsel", q:"none"},
+  C06:{m:"Sofortrabatt 10 % auf die Position", q:"abg", n:7270,
+       how:"Positionen mit RabattPosProz = 10, abzüglich der automatischen Kundenrabatte (Konto mit RabattN = 10, Stempelkarte 10).",
+       extra:[["Positionen gesamt",60561],["davon automatisch",53291],["Bons mit Handrabatt",951]]},
+  C07:{m:"Sofortrabatt 15 % auf die Position", q:"abg", n:3616,
+       how:"Positionen mit RabattPosProz = 15; kein Konto hat 15 % hinterlegt, also alle von Hand.",
+       extra:[["Bons",2856]]},
+  C08:{m:"Sofortrabatt 30 % auf die Position", q:"abg", n:4887,
+       how:"Positionen mit RabattPosProz = 30, alle von Hand (Abschriftsatz).",
+       extra:[["Bons",3202]]},
+  C09:{m:"Sofortrabatt 50 % auf die Position", q:"abg", n:12825,
+       how:"Positionen mit RabattPosProz = 50, alle von Hand (Abschriftsatz).",
+       extra:[["Bons",5528]]},
+  C10:{m:"Dritter Verkaufspreis (Verkauf.VK2) für die Position", q:"null", n:0,
+       how:"Keine einzige Position im Zeitraum trägt VK1 oder VK2 aus dem Artikelstamm; alle Preise sind VK0 oder frei eingegeben."},
+  D02:{m:"Bareinlage in die Kasse (Wechselgeld)", q:"abg", n:87,
+       how:"Bons ohne Positionen mit positiver Summe in Kasse.dbo.Summe.",
+       extra:[["Kasse 103",28],["Kasse 105",59],["Ø Betrag","74 €"]]},
+  E02:{m:"Barentnahme / Abschöpfung", q:"abg", n:602,
+       how:"Bons ohne Positionen mit negativer Summe; je Kasse einmal pro Öffnungstag (302 Tage).",
+       extra:[["Kasse 103",302],["Kasse 105",300],["Summe","1,03 Mio €"]]},
+  D03:{m:"Position stornieren", q:"mess", n:7517,
+       how:"Stornopaare in Kasse.dbo.Detail (Flag-Bit 32: Original plus Gegenbuchung). LOG Typ 1 zählt 7.220 Storno-Einträge.",
+       extra:[["davon Buchstabentasten",331],["LOG-Einträge Typ 1",7220]]},
+  D04:{m:"Ganzen Bon verwerfen", q:"mess", n:90,
+       how:"Kasse.dbo.LOG Typ 1 mit Text „Storno alles“ (71) oder „Bonstorno“ (19)."},
+  D05:{m:"Schublade öffnen ohne Verkauf", q:"mess", n:3620,
+       how:"Kasse.dbo.LOG Typ 3 „Schublade“. Öffnungen beim Bezahlen werden nicht protokolliert."},
+  D06:{m:"Steuersatz auf 7 % umschalten (Mitnahme)", q:"null", n:0,
+       how:"Keine Position im Zeitraum, deren MwSt vom Artikelstamm nach unten abweicht (Detail.MwSt 7 bei Verkauf.MwSt 19)."},
+  D07:{m:"Waage tarieren", q:"none", how:"Die Waage liefert nur das Endgewicht; Tarieren hinterlässt nichts.",
+       extra:[["Waage-Positionen",174856]]},
+  D11:{m:"Eingabe löschen", q:"none"},
+  D12:{m:"Rücknahme: nächste Position negativ buchen", q:"abg", n:18241,
+       how:"Positionen mit negativer Menge, die kein Stornopaar sind (Flag-Bit 32 nicht gesetzt).",
+       extra:[["Pfand / Gutschein (Buchstaben)",17881],["Artikel",360]]},
+  E03:{m:"Kassenmenü (Z-Bon, Berichte, Einstellungen)", q:"none", how:"Menüaufrufe werden nicht protokolliert.",
+       extra:[["Z-Bons im Zeitraum",2671]]},
+  E04:{m:"Artikelsuche nach Bezeichnung", q:"none", how:"Ein gefundener Artikel bucht wie ein gescannter."},
+  E05:{m:"Kundenkonto dem Bon zuordnen", q:"abg", n:11030,
+       how:"Bons mit Kundenkonto in Kasse.dbo.Summe. Kundenkarten (12-stellig) werden meist gescannt.",
+       extra:[["Mitarbeiter- / Sammelkonten",10262],["Abschreibung 200",475],["Kundenkredit 100",199],["Kundenkarten",94]]},
+  E06:{m:"Zwischensumme anzeigen", q:"none"},
+  E07:{m:"Zahlung auf Kundenkonto (Rechnung)", q:"abg", n:113,
+       how:"Bons auf Konto 100 ohne Bar- und EC-Betrag; Kasse.dbo.Konten zählt 111 Posten „Einkauf“."},
+  E11:{m:"Getippte Artikelnummer (PLU) abschließen", q:"abg", n:235857,
+       how:"Positionen mit 2- bis 5-stelliger Nummer, die nicht automatisch angehängt wurden (kein Pfand-, Gebinde- oder Stornoflag). Ob der Abschluss über „Artikel Nr.“ oder Enter läuft, ist nicht unterscheidbar.",
+       extra:[["davon Wiegeware (Waage)",174856],["davon mit Preiseingabe",4719],["3-stellig",235498]]},
+  E12:{m:"Mehrfachbuchung: Menge × Artikel", q:"abg", n:43421,
+       how:"Positionen mit ganzzahliger Menge über 1 ohne Pfand-, Gebinde- oder Stornoflag. Ob „∗“ oder „Menge“ gedrückt wurde, ist nicht unterscheidbar; die Zahl steht auf beiden.",
+       extra:[["2×",21555],["3×",7704],["4×",4937],["6×",2833],["10×",1908]]},
+  F04:{m:"Mehrfachbuchung: Menge eingeben", q:"abg", n:43421,
+       how:"Dieselben 43.421 Mehrfachbuchungen wie bei „∗“ — welche der beiden Tasten benutzt wird, steht nicht in den Daten.",
+       extra:[["2×",21555],["3×",7704],["4×",4937],["6×",2833],["10×",1908]]},
+  F05:{m:"Getippte EAN abschließen", q:"none",
+       how:"Getippte und gescannte EANs sehen im Bon gleich aus.",
+       extra:[["EAN-Positionen (Scanner)",400214],["unbekannte EAN gescannt (LOG 5)",8962]]},
+  F06:{m:"Barzahlung", q:"mess", n:46304,
+       how:"Bons mit Bar-Betrag in Kasse.dbo.Summe (46.285 rein bar, 19 gemischt mit EC)."},
+  F07:{m:"Kartenzahlung (EC)", q:"mess", n:36503,
+       how:"Bons mit Scheck-Betrag in Kasse.dbo.Summe (36.484 rein EC, 19 gemischt mit bar)."},
+  F11:{m:"Bestätigen", q:"none", how:"Enter schließt Eingaben ab, hinterlässt aber selbst nichts."},
+  G04:{m:"Preis einer Position ändern", q:"mess", n:1263,
+       how:"Kasse.dbo.LOG Typ 9 „VK alt … neu …“. Freie Preiseingaben vor einer Warengruppentaste (87.878 Positionen mit Flag 512) laufen ohne diese Taste.",
+       extra:[["Preiseingaben gesamt",87878],["davon Buchstabentasten",82318]]},
+  G05:{m:"Rabattsatz frei eingeben", q:"abg", n:7995,
+       how:"Positionen mit von Hand gegebenem Satz außerhalb der Preset-Tasten 10/15/30/50, ohne automatische Kundenrabatte.",
+       extra:[["5 %",3969],["20 %",3985],["100 %",26],["andere Sätze",15]]},
+  G06:{m:"Bon abschließen und drucken", q:"mess", n:85013,
+       how:"Alle Bons in Kasse.dbo.Summe im Zeitraum, einschließlich Ein-/Auszahlungen und Abschreibungen.",
+       extra:[["gedruckt",84324],["Kasse 103 + 105","302 Tage"]]},
+  G09:{m:"Doppelnull", q:"none", how:"Nicht von zwei einzelnen Nullen zu unterscheiden.", extra:[["Preise auf volle Euro",3477]]},
+  G10:{m:"Komma", q:"none", how:"Werden Preise mit Komma getippt, entfallen bis zu 87.878 Anschläge hierher; als Centbetrag ohne Komma keiner."}
+};
+// Ziffern: geschätzt aus getippten PLUs, Mehrfachmengen und freien Preiseingaben
+const ZIFFERN = {
+  "0":{pos:"G08",plu:103259,menge:2148,preis:29646},
+  "1":{pos:"F08",plu:49881,menge:2744,preis:39453},
+  "2":{pos:"F09",plu:38001,menge:22118,preis:30223},
+  "3":{pos:"F10",plu:30564,menge:7826,preis:22404},
+  "4":{pos:"E08",plu:73837,menge:5005,preis:17599},
+  "5":{pos:"E09",plu:169052,menge:2081,preis:38831},
+  "6":{pos:"E10",plu:127332,menge:2928,preis:12136},
+  "7":{pos:"D08",plu:27163,menge:575,preis:11592},
+  "8":{pos:"D09",plu:45494,menge:671,preis:16472},
+  "9":{pos:"D10",plu:47152,menge:269,preis:31082}
+};
+for(const [z,d] of Object.entries(ZIFFERN)){
+  FN[d.pos] = {m:`Ziffer ${z}`, q:"sch", n:d.plu+d.menge+d.preis,
+    how:"Ziffernhäufigkeit in getippten Artikelnummern, Mehrfachmengen und freien Preiseingaben (Centbetrag ohne Komma). Untere Grenze: EAN-, Kunden-, Rabatt- und Zahlbetrag-Eingaben fehlen.",
+    extra:[["aus Artikelnummern",d.plu],["aus Mengen",d.menge],["aus Preisen",d.preis]]};
+}
+
 const byPos = {};
 for(const [l,d] of Object.entries(AZ)){ d.letter = l; byPos[d.pos] = d; }
 
 const fmtN = n => n.toLocaleString("de-DE");
 const fmtE = n => n.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}) + " €";
 const fmtP = n => n.toLocaleString("de-DE",{minimumFractionDigits:1,maximumFractionDigits:1}) + " %";
-const heat = n => n >= 10000 ? "var(--heat-4)" : n >= 1000 ? "var(--heat-3)" : n >= 100 ? "var(--heat-2)" : n >= 10 ? "var(--heat-1)" : "var(--heat-0)";
+const heat = n => n >= 100000 ? "var(--heat-5)" : n >= 10000 ? "var(--heat-4)" : n >= 1000 ? "var(--heat-3)" : n >= 100 ? "var(--heat-2)" : n >= 10 ? "var(--heat-1)" : "var(--heat-0)";
 const isRet = d => d.ret > d.n / 2;
+const QLAB = {mess:"gemessen", abg:"abgeleitet", sch:"geschätzt", null:"messbar, null", none:"keine Spur"};
+const QCOL = {mess:"var(--q-mess)", abg:"var(--q-abg)", sch:"var(--q-sch)", null:"var(--rail)", none:"var(--rail-dim)"};
 
 const keys = IST.map(([R,c,label,state="belegt",w=1,h=1]) => ({r:ROWL.indexOf(R)+1,c,w,h,label,state}));
 const posOf = k => ROWL[k.r-1] + String(k.c).padStart(2,"0");
+const capOf = {}; keys.forEach(k => capOf[posOf(k)] = k.label);
 
 const grid = document.getElementById("grid");
 const tip  = document.getElementById("tip");
@@ -256,52 +408,83 @@ function render(){
     const d = document.createElement("div"); d.className = "rail";
     d.textContent = ROWL[r-1]; d.style.gridRow = r+1; d.style.gridColumn = 1; grid.appendChild(d);
   }
+  let mit = 0, ohne = 0;
   keys.forEach(k => {
-    const p = posOf(k), d = byPos[p];
-    const b = document.createElement(d ? "button" : "div");
+    const p = posOf(k), az = byPos[p], fn = FN[p];
+    const b = document.createElement(k.state === "frei" ? "div" : "button");
     b.style.gridRow = `${k.r+1} / span ${k.h}`;
     b.style.gridColumn = `${k.c+1} / span ${k.w}`;
-    if(d){
-      b.className = "key az";
-      b.style.background = heat(d.n);
-      b.setAttribute("aria-label", `${k.label}: ${fmtN(d.n)} Positionen`);
-      const n = document.createElement("span"); n.className = "n"; n.textContent = fmtN(d.n);
-      const l = document.createElement("span"); l.className = "l"; l.textContent = d.letter;
+    const dot = cls => { const i = document.createElement("i"); i.className = "q " + cls; b.appendChild(i); };
+    if(k.state === "frei"){
+      b.className = "key frei"; b.textContent = "frei";
+    }else if(az){
+      b.className = "key"; b.style.background = heat(az.n);
+      b.setAttribute("aria-label", `${k.label}: ${fmtN(az.n)} Positionen`);
+      const n = document.createElement("span"); n.className = "n"; n.textContent = fmtN(az.n);
+      const l = document.createElement("span"); l.className = "l"; l.textContent = az.letter;
       b.append(n, l);
-      if(isRet(d)){ const r = document.createElement("i"); r.className = "ret"; b.appendChild(r); }
-      b.addEventListener("pointerenter", e => showTip(k, d, e));
-      b.addEventListener("pointermove", moveTip);
-      b.addEventListener("pointerleave", hideTip);
-      b.addEventListener("focus", e => showTip(k, d, e));
-      b.addEventListener("blur", hideTip);
+      dot(isRet(az) ? "ret" : "mess");
+      wire(b, () => tipAZ(k, az));
+      mit++;
+    }else if(fn && fn.n != null && fn.q !== "none"){
+      b.className = "key klein" + (fn.n === 0 ? " null" : "");
+      if(fn.n > 0) b.style.background = heat(fn.n);
+      b.setAttribute("aria-label", `${k.label}: ${fmtN(fn.n)} Anschläge, ${QLAB[fn.q]}`);
+      const n = document.createElement("span"); n.className = "n"; n.textContent = fmtN(fn.n);
+      const l = document.createElement("span"); l.className = "l"; l.textContent = k.label;
+      b.append(n, l);
+      if(fn.n > 0) dot(fn.q);
+      wire(b, () => tipFN(k, fn));
+      mit++;
     }else{
-      b.className = "key " + (k.state === "frei" ? "frei" : "andere");
-      b.textContent = k.state === "frei" ? "frei" : k.label;
-      b.title = k.state === "frei" ? "unbelegt" : k.label + " — keine Buchstabenfunktion, erzeugt keine A–Z-Position";
+      b.className = "key leer";
+      const l = document.createElement("span"); l.className = "l"; l.textContent = k.label; b.appendChild(l);
+      b.setAttribute("aria-label", `${k.label}: keine Spur in den Daten`);
+      wire(b, () => tipFN(k, fn || {m:k.label, q:"none"}));
+      ohne++;
     }
     const code = document.createElement("span"); code.className = "code"; code.textContent = p;
     b.appendChild(code);
     grid.appendChild(b);
   });
+  document.getElementById("n-mit").textContent = mit;
+  document.getElementById("n-ohne").textContent = ohne;
 }
 
-function showTip(k, d, e){
-  const share = d.n / TOTAL * 100;
-  const retLabel = isRet(d) ? "Rücknahmen" : "Stornos";
-  tip.innerHTML = `
-    <p class="cap">${k.label}</p>
-    <p class="stamm">Taste ${d.pos} · Buchstabe <code>${d.letter}</code> · Stamm „${d.stamm}“ (EAN ${d.ean})</p>
-    <dl>
-      <dt>Positionen</dt><dd class="big">${fmtN(d.n)}</dd>
-      <dt>Anteil A–Z</dt><dd>${fmtP(share)}</dd>
-      <dt>Bons</dt><dd>${fmtN(d.bons)}</dd>
-      <dt>${retLabel}</dt><dd>${fmtN(d.ret)}</dd>
-      <dt>Umsatz</dt><dd>${fmtE(d.ums)}</dd>
-    </dl>
-    ${isRet(d) ? '<p class="note">Fast ausschließlich Rücknahmen (negative Menge), daher negativer Umsatz.</p>' : ''}`;
-  tip.hidden = false;
-  moveTip(e);
+function wire(b, build){
+  const show = e => { tip.innerHTML = build(); tip.hidden = false; moveTip(e); };
+  b.addEventListener("pointerenter", show);
+  b.addEventListener("pointermove", moveTip);
+  b.addEventListener("pointerleave", hideTip);
+  b.addEventListener("focus", show);
+  b.addEventListener("blur", hideTip);
 }
+
+const qlab = q => `<p class="qlab"><i style="background:${QCOL[q]}"></i>${QLAB[q]}</p>`;
+const dl = rows => `<dl>${rows.map(([t,v,big]) => `<dt>${t}</dt><dd${big ? ' class="big"' : ''}>${typeof v === "number" ? fmtN(v) : v}</dd>`).join("")}</dl>`;
+
+function tipAZ(k, d){
+  const share = d.n / AZ_TOTAL * 100;
+  const rows = [["Positionen", d.n, true], ["Anteil A–Z", fmtP(share)], ["Bons", d.bons], [isRet(d) ? "Rücknahmen" : "Stornos", d.ret], ["Umsatz", fmtE(d.ums)]];
+  return `<p class="cap">${k.label}</p>
+    <p class="mean">Warengruppentaste: Betrag eingeben, Taste drücken</p>
+    <p class="stamm">Taste ${d.pos} · Buchstabe <code>${d.letter}</code> · Stamm „${d.stamm}“ (EAN ${d.ean})</p>
+    ${qlab("mess")}${dl(rows)}
+    ${isRet(d) ? '<p class="note">Fast ausschließlich Rücknahmen (negative Menge), daher negativer Umsatz.</p>' : ''}`;
+}
+
+function tipFN(k, f){
+  const pos = posOf(k);
+  const rows = [];
+  if(f.n != null && f.q !== "none") rows.push(["Anschläge", f.n, true]);
+  (f.extra || []).forEach(([t,v]) => rows.push([t, v]));
+  return `<p class="cap">${k.label}</p>
+    <p class="mean">${f.m}</p>
+    <p class="stamm">Taste ${pos}</p>
+    ${qlab(f.q)}${rows.length ? dl(rows) : ""}
+    ${f.how ? `<p class="note">${f.how}</p>` : (f.q === "none" ? '<p class="note">Hinterlässt weder im Bon noch im Kassen-LOG eine Spur.</p>' : "")}`;
+}
+
 function moveTip(e){
   if(tip.hidden) return;
   const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
@@ -313,17 +496,29 @@ function moveTip(e){
 }
 function hideTip(){ tip.hidden = true; }
 
-function renderTable(){
+function renderTables(){
+  const tf = document.querySelector("#tbl-f tbody");
+  const order = {mess:0, abg:1, sch:2, null:3, none:4};
+  const val = f => (f.q === "none" || f.n == null) ? -1 : f.n;
+  Object.entries(FN).map(([pos, f]) => ({pos, ...f}))
+    .sort((a,b) => val(b) - val(a) || order[a.q] - order[b.q] || a.pos.localeCompare(b.pos))
+    .forEach(f => {
+      const tr = document.createElement("tr");
+      const n = f.q === "none" || f.n == null ? "–" : fmtN(f.n);
+      tr.innerHTML = `<td class="l">${f.pos}</td><td class="t cap">${capOf[f.pos] || ""}</td><td class="t">${f.m}</td>
+        <td>${n}</td><td class="t q"><i style="background:${QCOL[f.q]}"></i>${QLAB[f.q]}</td><td class="t wrap">${f.how || ""}</td>`;
+      tf.appendChild(tr);
+    });
+
   const tb = document.querySelector("#tbl tbody");
-  const capOf = {}; keys.forEach(k => capOf[posOf(k)] = k.label);
   Object.values(AZ).sort((a,b) => b.n - a.n).forEach(d => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td class="l">${d.letter} · ${d.pos}</td><td class="cap">${capOf[d.pos]}</td><td class="stamm">${d.stamm} (${d.ean})</td>
+    tr.innerHTML = `<td class="l">${d.letter} · ${d.pos}</td><td class="t cap">${capOf[d.pos]}</td><td class="t stamm">${d.stamm} (${d.ean})</td>
       <td>${fmtN(d.n)}</td><td>${fmtN(d.ret)}</td><td>${fmtN(d.bons)}</td><td class="${d.ums < 0 ? 'neg' : ''}">${fmtE(d.ums)}</td>`;
     tb.appendChild(tr);
   });
 }
 render();
-renderTable();
+renderTables();
 </script>
 </body></html>
