@@ -68,7 +68,8 @@ die Beschriftung bleibt als Tooltip erhalten. Die Bilder in `icons/` sind
 200 × 200 px mit transparentem Hintergrund, vom Weißrand befreit — die
 Aufbereitung aus den 1024er Originalen ist nur für das Mockup gedacht, der
 Druck der Tastenkappen läuft über die Originale. Benannt nach PLU:
-600–698 Obst, 460–595 Gemüse. Die Weitergabe-HTML trägt keine Icons mit.
+600–698 Obst, 401–595 Gemüse und Eier; Warengruppen-Tasten ohne PLU nach der
+Ware (`fleisch`, `kaese`, `brot`). Die Weitergabe-HTML trägt keine Icons mit.
 
 ## Speichern
 
