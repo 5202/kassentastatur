@@ -104,7 +104,7 @@
   .key:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.22)}
   .key:focus-visible{outline:2px solid var(--led);outline-offset:2px}
   .key.dark{color:var(--ink-inv)}
-  .key .lbl{display:block;max-width:100%}
+  .key .lbl{display:block;max-width:100%;white-space:pre-line}
 
   /* leere Position: kein Cap, nur die Mulde */
   .key.frei{
@@ -623,8 +623,9 @@ function render(){
   autosave();
 }
 
-// Anzeigeform der Beschriftung: Zahl und Prozentzeichen bleiben zusammen („19 %“)
-const anzeige = t => t.replace(/(\d) ?%/g, "$1\u00a0%");
+// Anzeigeform der Beschriftung: Zahl und Prozentzeichen bleiben zusammen („19 %“);
+// beginnt sie mit Zahl und Prozent, steht das immer allein in der ersten Zeile („5 %“ / „Bon“)
+const anzeige = t => t.replace(/(\d) ?%/g, "$1\u00a0%").replace(/^(\d+\u00a0%) +(\S.*)$/, "$1\n$2");
 
 function select(k){
   sel = k;

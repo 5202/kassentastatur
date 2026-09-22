@@ -72,7 +72,7 @@
     hyphenate-limit-chars:6 3 3;-webkit-hyphenate-limit-before:3;-webkit-hyphenate-limit-after:3;
   }
   .e.dark{color:#fff}
-  .e .t{display:block;max-width:100%;font-size:2.6mm}
+  .e .t{display:block;max-width:100%;font-size:2.6mm;white-space:pre-line}
   .e.digit .t{font-size:5.2mm;font-weight:500}
   .e.pfeil .t{font-size:5mm;font-weight:500}
   .e img{width:12mm;height:12mm;object-fit:contain;display:block;pointer-events:none}
@@ -252,8 +252,9 @@ function render(){
 
 function textNode(k){
   const t = document.createElement("span"); t.className = "t";
-  // Zahl und Prozentzeichen bleiben zusammen („19 %“)
-  t.textContent = k.label.replace(/(\d) ?%/g, "$1\u00a0%");
+  // Zahl und Prozentzeichen bleiben zusammen („19 %“); beginnt die Beschriftung damit,
+  // steht es immer allein in der ersten Zeile („5 %“ / „Bon“)
+  t.textContent = k.label.replace(/(\d) ?%/g, "$1\u00a0%").replace(/^(\d+\u00a0%) +(\S.*)$/, "$1\n$2");
   if(/^[0-9,]{1,2}$|^[0-9]$/.test(k.label)) t.dataset.kind = "digit";
   if(/^[←↑→↓∗*]$/.test(k.label)) t.dataset.kind = "pfeil";
   return t;
