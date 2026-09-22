@@ -67,12 +67,12 @@
     display:flex;align-items:center;justify-content:center;text-align:center;
     overflow:hidden;color:#000;background:#fff;
     font-weight:600;line-height:1.08;padding:0.6mm;
-    hyphens:manual;-webkit-hyphens:manual;overflow-wrap:normal;word-break:normal;
+    /* Umbruch am Leerzeichen; zu lange Wörter deutsch trennen, nie mitten im Wort brechen */
+    hyphens:auto;-webkit-hyphens:auto;overflow-wrap:normal;word-break:normal;
+    hyphenate-limit-chars:6 3 3;-webkit-hyphenate-limit-before:3;-webkit-hyphenate-limit-after:3;
   }
-  .e.trenn{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
   .e.dark{color:#fff}
-  .e .t{display:block;max-width:100%;font-size:2.6mm;white-space:nowrap}
-  .e .t.wrap{white-space:normal}
+  .e .t{display:block;max-width:100%;font-size:2.6mm}
   .e.digit .t{font-size:5.2mm;font-weight:500}
   .e.pfeil .t{font-size:5mm;font-weight:500}
   .e img{width:12mm;height:12mm;object-fit:contain;display:block;pointer-events:none}
@@ -259,27 +259,12 @@ function textNode(k){
   return t;
 }
 
-// Schrift so weit verkleinern, dass die Beschriftung in einer Zeile in den Einleger passt;
-// reicht das bis zur Mindestgröße nicht, darf sie am Leerzeichen umbrechen,
-// und erst als letzter Ausweg wird getrennt.
+// Ziffern und Pfeile bekommen ihre große Schrift; sonst feste Größe mit Umbruch
 function fit(host){
   const t = host.querySelector(".t"); if(!t) return;
   const e = host.classList.contains("inner") ? host.parentElement : host;
   if(t.dataset.kind === "digit") e.classList.add("digit");
   if(t.dataset.kind === "pfeil") e.classList.add("pfeil");
-  if(e.classList.contains("leer")) return;
-  const start = t.dataset.kind ? 5.2 : 2.6, min = 1.7;
-  const passt = () => t.scrollWidth <= host.clientWidth - 1 && t.scrollHeight <= host.clientHeight - 1;
-  const lauf = (bis) => {
-    let mm = start, guard = 0; t.style.fontSize = mm + "mm";
-    while(!passt() && mm > bis && guard++ < 40){ mm -= 0.1; t.style.fontSize = mm.toFixed(2) + "mm"; }
-    return passt();
-  };
-  t.classList.remove("wrap"); e.classList.remove("trenn");
-  if(lauf(2.0)) return;                      // eine Zeile, mindestens 2,0 mm
-  t.classList.add("wrap");
-  if(lauf(min)) return;                      // am Leerzeichen umbrechen
-  e.classList.add("trenn"); lauf(min);       // letzter Ausweg: trennen
 }
 
 async function laden(u){

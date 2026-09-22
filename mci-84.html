@@ -93,7 +93,10 @@
     display:flex;align-items:center;justify-content:center;text-align:center;
     box-shadow:inset 0 -3px 0 rgba(0,0,0,.22), 0 1px 2px rgba(0,0,0,.5);
     transition:transform .08s ease, box-shadow .08s ease;
-    overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual;
+    /* Umbruch am Leerzeichen; ein zu langes Wort wird deutsch getrennt (lang="de"),
+       mindestens drei Buchstaben vor und nach dem Trennstrich, nie mitten im Wort gebrochen */
+    overflow-wrap:normal;hyphens:auto;-webkit-hyphens:auto;
+    hyphenate-limit-chars:6 3 3;-webkit-hyphenate-limit-before:3;-webkit-hyphenate-limit-after:3;
     touch-action:manipulation;
     -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
   }
@@ -101,9 +104,7 @@
   .key:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.22)}
   .key:focus-visible{outline:2px solid var(--led);outline-offset:2px}
   .key.dark{color:var(--ink-inv)}
-  /* Beschriftung: erst ohne Umbruch verkleinern (fit), erst dann am Leerzeichen brechen */
-  .key .lbl{display:block;max-width:100%;white-space:nowrap}
-  .key .lbl.wrap{white-space:normal}
+  .key .lbl{display:block;max-width:100%}
 
   /* leere Position: kein Cap, nur die Mulde */
   .key.frei{
@@ -611,8 +612,6 @@ function render(){
     g.appendChild(b);
   });
 
-  fitAll();
-
   const tally = {belegt:0, flex:0, frei:0};
   keys.forEach(k => tally[k.state] += k.w * k.h);
   document.getElementById("n-belegt").textContent = tally.belegt;
@@ -626,28 +625,6 @@ function render(){
 
 // Anzeigeform der Beschriftung: Zahl und Prozentzeichen bleiben zusammen („19 %“)
 const anzeige = t => t.replace(/(\d) ?%/g, "$1\u00a0%");
-
-// Schrift je Taste so weit verkleinern, dass die Beschriftung in einer Zeile steht;
-// reicht das bis zur Mindestgröße nicht, darf sie am Leerzeichen umbrechen.
-function fitAll(){
-  document.querySelectorAll("#grid .key .lbl").forEach(l => {
-    const b = l.parentElement;
-    if(b.classList.contains("frei") || b.classList.contains("hasico")) return;
-    l.style.fontSize = ""; l.classList.remove("wrap");
-    const base = parseFloat(getComputedStyle(l).fontSize) || 12;
-    const innenB = () => b.clientWidth  - 2 * parseFloat(getComputedStyle(b).paddingLeft);
-    const innenH = () => b.clientHeight - 2 * parseFloat(getComputedStyle(b).paddingTop);
-    const passt = () => l.scrollWidth <= innenB() + 0.5 && l.scrollHeight <= innenH() + 0.5;
-    let px = base;
-    while(!passt() && px > base * 0.78){ px -= 0.5; l.style.fontSize = px + "px"; }
-    if(passt()) return;
-    l.classList.add("wrap"); px = base; l.style.fontSize = "";
-    while(!passt() && px > base * 0.7){ px -= 0.5; l.style.fontSize = px + "px"; }
-  });
-}
-window.addEventListener("resize", () => { clearTimeout(fitAll._t); fitAll._t = setTimeout(fitAll, 120); });
-window.addEventListener("beforeprint", fitAll);
-window.addEventListener("afterprint", fitAll);
 
 function select(k){
   sel = k;
