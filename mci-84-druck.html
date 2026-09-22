@@ -71,7 +71,8 @@
   }
   .e.trenn{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
   .e.dark{color:#fff}
-  .e .t{display:block;width:100%;font-size:2.6mm}
+  .e .t{display:block;max-width:100%;font-size:2.6mm;white-space:nowrap}
+  .e .t.wrap{white-space:normal}
   .e.digit .t{font-size:5.2mm;font-weight:500}
   .e.pfeil .t{font-size:5mm;font-weight:500}
   .e img{width:12mm;height:12mm;object-fit:contain;display:block;pointer-events:none}
@@ -251,31 +252,34 @@ function render(){
 
 function textNode(k){
   const t = document.createElement("span"); t.className = "t";
-  // ein einzelnes Prozentzeichen bleibt bei seiner Zahl („Pfand 7 %“ bricht nicht vor dem %)
-  t.textContent = k.label.replace(/ %/g, "\u00a0%");
+  // Zahl und Prozentzeichen bleiben zusammen („19 %“)
+  t.textContent = k.label.replace(/(\d) ?%/g, "$1\u00a0%");
   if(/^[0-9,]{1,2}$|^[0-9]$/.test(k.label)) t.dataset.kind = "digit";
   if(/^[←↑→↓∗*]$/.test(k.label)) t.dataset.kind = "pfeil";
   return t;
 }
 
-// Schrift so weit verkleinern, dass die Beschriftung in den Einleger passt;
-// erst wenn das bis zur Mindestgröße nicht reicht, wird getrennt
+// Schrift so weit verkleinern, dass die Beschriftung in einer Zeile in den Einleger passt;
+// reicht das bis zur Mindestgröße nicht, darf sie am Leerzeichen umbrechen,
+// und erst als letzter Ausweg wird getrennt.
 function fit(host){
   const t = host.querySelector(".t"); if(!t) return;
   const e = host.classList.contains("inner") ? host.parentElement : host;
   if(t.dataset.kind === "digit") e.classList.add("digit");
   if(t.dataset.kind === "pfeil") e.classList.add("pfeil");
   if(e.classList.contains("leer")) return;
-  let mm = t.dataset.kind ? 5.2 : 2.6;
-  const min = 1.7;
-  t.style.fontSize = mm + "mm";
+  const start = t.dataset.kind ? 5.2 : 2.6, min = 1.7;
   const passt = () => t.scrollWidth <= host.clientWidth - 1 && t.scrollHeight <= host.clientHeight - 1;
-  let guard = 0;
-  while(!passt() && mm > min && guard++ < 40){ mm -= 0.1; t.style.fontSize = mm.toFixed(2) + "mm"; }
-  if(!passt()){
-    e.classList.add("trenn"); mm = t.dataset.kind ? 5.2 : 2.6; t.style.fontSize = mm + "mm"; guard = 0;
-    while(!passt() && mm > min && guard++ < 40){ mm -= 0.1; t.style.fontSize = mm.toFixed(2) + "mm"; }
-  }
+  const lauf = (bis) => {
+    let mm = start, guard = 0; t.style.fontSize = mm + "mm";
+    while(!passt() && mm > bis && guard++ < 40){ mm -= 0.1; t.style.fontSize = mm.toFixed(2) + "mm"; }
+    return passt();
+  };
+  t.classList.remove("wrap"); e.classList.remove("trenn");
+  if(lauf(2.0)) return;                      // eine Zeile, mindestens 2,0 mm
+  t.classList.add("wrap");
+  if(lauf(min)) return;                      // am Leerzeichen umbrechen
+  e.classList.add("trenn"); lauf(min);       // letzter Ausweg: trennen
 }
 
 async function laden(u){
