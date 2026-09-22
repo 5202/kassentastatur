@@ -93,7 +93,7 @@
     display:flex;align-items:center;justify-content:center;text-align:center;
     box-shadow:inset 0 -3px 0 rgba(0,0,0,.22), 0 1px 2px rgba(0,0,0,.5);
     transition:transform .08s ease, box-shadow .08s ease;
-    overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto;
+    overflow-wrap:normal;hyphens:manual;-webkit-hyphens:manual;
     touch-action:manipulation;
     -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
   }
@@ -101,6 +101,9 @@
   .key:active{transform:translateY(1px);box-shadow:inset 0 -1px 0 rgba(0,0,0,.22)}
   .key:focus-visible{outline:2px solid var(--led);outline-offset:2px}
   .key.dark{color:var(--ink-inv)}
+  /* Beschriftung: erst ohne Umbruch verkleinern (fit), erst dann am Leerzeichen brechen */
+  .key .lbl{display:block;max-width:100%;white-space:nowrap}
+  .key .lbl.wrap{white-space:normal}
 
   /* leere Position: kein Cap, nur die Mulde */
   .key.frei{
@@ -248,7 +251,7 @@
     .grid{min-width:0;grid-template-columns:16px repeat(12, minmax(0,1fr));grid-auto-rows:13.5mm;gap:1.6mm}
     .rail{color:#888}
     .key{
-      box-shadow:none;border:0.25mm solid #999;color:#000;font-size:9.5px;padding:2px 3px;
+      box-shadow:none;border:0.25mm solid #999;color:#000;font-size:9px;padding:2px 3px;
       -webkit-print-color-adjust:exact;print-color-adjust:exact;
     }
     .key.dark{color:#fff}
@@ -581,7 +584,10 @@ function render(){
     b.style.gridRow = `${k.r+1} / span ${k.h}`;
     b.style.gridColumn = `${k.c+1} / span ${k.w}`;
     if(k.state !== "frei") b.style.background = cat.c;
-    b.textContent = k.state === "frei" ? "frei" : k.label;
+    const lbl = document.createElement("span");
+    lbl.className = "lbl";
+    lbl.textContent = k.state === "frei" ? "frei" : anzeige(k.label);
+    b.appendChild(lbl);
     if(k.icon && k.state !== "frei"){
       const im = document.createElement("img");
       im.className = "ico"; im.alt = k.label; im.draggable = false;
@@ -605,6 +611,8 @@ function render(){
     g.appendChild(b);
   });
 
+  fitAll();
+
   const tally = {belegt:0, flex:0, frei:0};
   keys.forEach(k => tally[k.state] += k.w * k.h);
   document.getElementById("n-belegt").textContent = tally.belegt;
@@ -615,6 +623,31 @@ function render(){
 
   autosave();
 }
+
+// Anzeigeform der Beschriftung: Zahl und Prozentzeichen bleiben zusammen („19 %“)
+const anzeige = t => t.replace(/(\d) ?%/g, "$1\u00a0%");
+
+// Schrift je Taste so weit verkleinern, dass die Beschriftung in einer Zeile steht;
+// reicht das bis zur Mindestgröße nicht, darf sie am Leerzeichen umbrechen.
+function fitAll(){
+  document.querySelectorAll("#grid .key .lbl").forEach(l => {
+    const b = l.parentElement;
+    if(b.classList.contains("frei") || b.classList.contains("hasico")) return;
+    l.style.fontSize = ""; l.classList.remove("wrap");
+    const base = parseFloat(getComputedStyle(l).fontSize) || 12;
+    const innenB = () => b.clientWidth  - 2 * parseFloat(getComputedStyle(b).paddingLeft);
+    const innenH = () => b.clientHeight - 2 * parseFloat(getComputedStyle(b).paddingTop);
+    const passt = () => l.scrollWidth <= innenB() + 0.5 && l.scrollHeight <= innenH() + 0.5;
+    let px = base;
+    while(!passt() && px > base * 0.78){ px -= 0.5; l.style.fontSize = px + "px"; }
+    if(passt()) return;
+    l.classList.add("wrap"); px = base; l.style.fontSize = "";
+    while(!passt() && px > base * 0.7){ px -= 0.5; l.style.fontSize = px + "px"; }
+  });
+}
+window.addEventListener("resize", () => { clearTimeout(fitAll._t); fitAll._t = setTimeout(fitAll, 120); });
+window.addEventListener("beforeprint", fitAll);
+window.addEventListener("afterprint", fitAll);
 
 function select(k){
   sel = k;
