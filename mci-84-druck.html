@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCI 84 · Tastenkappen drucken</title>
+<style>
+  /* Druckvorlage für die Einleger der Tastenkappen (PrehKeyTec MCI 84).
+     Alle Maße in mm, damit der Ausdruck bei 100 % maßhaltig ist:
+       Rastermaß          19,05 mm (3/4 Zoll) von Tastenmitte zu Tastenmitte
+       Einleger 1 × 1     12,8 × 13,1 mm (Breite × Höhe)
+       Doppel-/Vierfachtaste: je weiteres Feld kommt ein Rastermaß dazu
+                          (quer 31,85 × 13,1 · hoch 12,8 × 32,15 · 2 × 2 31,85 × 32,15)
+     Das Blatt zeigt die Tastatur 1 : 1 in Querformat A4 — jeder Einleger sitzt
+     an seiner Position, die Lücken dazwischen erleichtern das Ausschneiden. */
+  :root{
+    --pitch:19.05mm; --iw:12.8mm; --ih:13.1mm;
+    --cap-grau:#d8d9d4; --cap-blau:#7b8fd0; --cap-gruen:#9dc48b; --cap-gelb:#e2dc72;
+    --cap-beige:#dcc9a6; --cap-rot:#e08e94; --cap-rosa:#e9a9c6; --cap-orange:#e2996f;
+    --cap-obst:#c9a3dc; --cap-gemuese:#8ecfb4; --cap-schwarz:#1e2124; --cap-weiss:#eceded;
+    --sans:"Helvetica Neue","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#4a4f54;color:#222;font-family:var(--sans);font-size:14px}
+
+  /* ---------- Bedienleiste (nicht im Druck) ---------- */
+  .bar{
+    position:sticky;top:0;z-index:5;background:#15181b;color:#e6e8ea;
+    padding:10px 16px;display:flex;gap:16px 22px;flex-wrap:wrap;align-items:center;
+    border-bottom:1px solid #2c3237;
+  }
+  .bar h1{font-size:15px;font-weight:600;margin:0 18px 0 0}
+  .bar label{display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;white-space:nowrap}
+  .bar input[type=text]{background:#0b0e10;color:#e6e8ea;border:1px solid #2c3237;border-radius:3px;padding:6px 8px;font-size:13px;width:120px}
+  .btn{background:#1d2226;color:#e6e8ea;border:1px solid #333a3f;border-radius:3px;padding:7px 12px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .btn:hover{border-color:#4fe05a}
+  .btn.primary{background:#4fe05a;color:#0a0c0d;border-color:#4fe05a;font-weight:600}
+  .sync{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:#8b949c;flex:1 1 100%}
+  .sync.ok{color:#4fe05a} .sync.err{color:#e0a04f}
+  .hint{max-width:1000px;margin:14px auto 0;color:#d9dde0;font-size:13px;padding:0 16px;line-height:1.5}
+  .hint b{color:#fff}
+
+  /* ---------- Blatt ---------- */
+  .blatt{
+    width:297mm;height:210mm;background:#fff;margin:16px auto 30px;
+    padding:8mm 8mm 6mm;position:relative;box-shadow:0 6px 30px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+  .kopf{display:flex;justify-content:space-between;align-items:baseline;font-size:9pt;color:#555;margin:0 0 3mm}
+  .kopf b{color:#000;font-weight:600}
+  .kopf .m{font-family:var(--mono);font-size:7.5pt;letter-spacing:.04em}
+
+  .feld{
+    position:relative;
+    width:calc(12 * var(--pitch)); height:calc(7 * var(--pitch));
+    margin-left:6mm; margin-top:6mm; /* Platz für Zeilenbuchstaben und Spaltennummern */
+  }
+  /* Raster-Orientierung: Zeilen A–G links, Spalten 01–12 oben — außerhalb der Schnittflächen */
+  .rl,.rt{position:absolute;font-family:var(--mono);font-size:6.5pt;color:#9a9a9a;text-align:center}
+  .rl{left:-6mm;width:5mm;height:var(--pitch);line-height:var(--pitch)}
+  .rt{top:-4.2mm;width:var(--pitch);height:3.5mm;line-height:3.5mm}
+
+  /* Einleger */
+  .e{
+    position:absolute;
+    border:0.15mm solid #8c8c8c;      /* Schnittlinie */
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    overflow:hidden;color:#000;background:#fff;
+    font-weight:600;line-height:1.08;padding:0.6mm;
+    hyphens:manual;-webkit-hyphens:manual;overflow-wrap:normal;word-break:normal;
+  }
+  .e.trenn{hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere}
+  .e.dark{color:#fff}
+  .e .t{display:block;width:100%;font-size:2.6mm}
+  .e.digit .t{font-size:5.2mm;font-weight:500}
+  .e.pfeil .t{font-size:5mm;font-weight:500}
+  .e img{width:12mm;height:12mm;object-fit:contain;display:block;pointer-events:none}
+  .e .pos{
+    position:absolute;right:0.5mm;bottom:0.2mm;font-family:var(--mono);
+    font-size:1.5mm;font-weight:400;color:#666;letter-spacing:.02em;line-height:1;
+  }
+  .e.dark .pos{color:#bbb}
+  .e.leer{border-style:dashed;border-color:#d0d0d0;background:#fff}
+  .e.leer.grau{background:#f4f4f4}
+  .e.leer .t{color:#c8c8c8;font-weight:400;font-size:1.8mm;font-family:var(--mono)}
+
+  /* Schnittmarken: kurze Striche über die Ecken hinaus */
+  .e .sm{position:absolute;pointer-events:none;background:#000}
+  .e .sm.h{height:0.12mm;width:1.4mm}
+  .e .sm.v{width:0.12mm;height:1.4mm}
+  .e .sm.tl.h{left:-1.8mm;top:-0.15mm} .e .sm.tl.v{top:-1.8mm;left:-0.15mm}
+  .e .sm.tr.h{right:-1.8mm;top:-0.15mm} .e .sm.tr.v{top:-1.8mm;right:-0.15mm}
+  .e .sm.bl.h{left:-1.8mm;bottom:-0.15mm} .e .sm.bl.v{bottom:-1.8mm;left:-0.15mm}
+  .e .sm.br.h{right:-1.8mm;bottom:-0.15mm} .e .sm.br.v{bottom:-1.8mm;right:-0.15mm}
+  /* Marken liegen außerhalb der Box — Box darf nicht abschneiden */
+  .blatt.marken .e{overflow:visible}
+  .blatt.marken .e .inner{position:absolute;inset:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0.6mm}
+
+  /* Kontrollmaß zum Prüfen der Druckgröße */
+  .mass{position:absolute;left:8mm;bottom:5mm;font-size:7pt;color:#555;display:flex;align-items:flex-end;gap:2mm}
+  .mass .lin{width:100mm;height:2.5mm;border:0.2mm solid #000;border-top:0;position:relative}
+  .mass .lin i{position:absolute;top:0;bottom:0;width:0.15mm;background:#000}
+  .fuss{position:absolute;right:8mm;bottom:5mm;font-size:7pt;color:#777;font-family:var(--mono);letter-spacing:.03em}
+
+  /* Druck: Safari übernimmt das Querformat nicht von selbst (im Dialog wählen).
+     Das Blatt wird im Druck nicht auf 297 × 210 mm festgenagelt, sondern nimmt nur
+     den Platz der Tastatur (≈ 243 × 150 mm) — so passt es in jede Randeinstellung
+     und läuft nicht auf eine zweite Seite. */
+  @page{size:A4 landscape;margin:8mm}
+  @media print{
+    html,body{background:#fff}
+    .bar,.hint{display:none !important}
+    .blatt{margin:0;box-shadow:none;width:auto;height:auto;padding:0 0 12mm;overflow:visible}
+    .mass{left:0;bottom:0}
+    .fuss{right:auto;left:150mm;bottom:0}
+    .e,.e.leer.grau{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head><body>
+
+<div class="bar">
+  <h1>Tastenkappen MCI 84</h1>
+  <label>Plan von <input type="text" id="name" placeholder="Vorname" autocomplete="off"></label>
+  <button class="btn" id="b-laden">Laden</button>
+  <label><input type="checkbox" id="o-farbe" checked> Kappenfarbe drucken</label>
+  <label><input type="checkbox" id="o-icons" checked> Icons statt Text</label>
+  <label><input type="checkbox" id="o-pos"> Positionscode</label>
+  <label><input type="checkbox" id="o-marken"> Schnittmarken</label>
+  <label><input type="checkbox" id="o-nur-icons"> nur Tasten mit Icon</label>
+  <button class="btn" id="b-json">JSON laden</button>
+  <button class="btn primary" id="b-print">Drucken</button>
+  <div class="sync" id="sync"></div>
+</div>
+
+<div class="hint">
+  Drucken auf <b>A4 quer, Skalierung 100 %</b> — im Druckdialog <b>Querformat</b> wählen (Safari stellt das nicht
+  selbst um) und nicht „an Seite anpassen". In Safari außerdem <b>Hintergründe drucken</b> anhaken, falls die
+  Kappenfarben fehlen. Das Kontrollmaß unten links
+  muss genau 100 mm lang sein. Jeder Rahmen ist ein Einleger in Originalgröße
+  (12,8 × 13,1 mm) und sitzt an der Stelle, an der die Taste auf der Tastatur liegt.
+  Entlang der grauen Linie ausschneiden und unter die Klarsichtkappe legen.
+</div>
+
+<div class="blatt" id="blatt">
+  <div class="kopf">
+    <div><b id="titel">Tastenkappen MCI 84</b> <span id="stand"></span></div>
+    <div class="m">Raster 19,05 mm · Einleger 12,8 × 13,1 mm · Blatt 1 : 1</div>
+  </div>
+  <div class="feld" id="feld"></div>
+  <div class="mass"><div class="lin"><i style="left:0"></i><i style="left:50mm"></i><i style="right:0"></i></div><span>100 mm Kontrollmaß</span></div>
+  <div class="fuss" id="fuss"></div>
+</div>
+
+<script>
+const ROWS = 7, COLS = 12, ROWL = "ABCDEFG";
+const CATS = {
+  blanko:"var(--cap-grau)", weiss:"var(--cap-weiss)", blau:"var(--cap-blau)", gruen:"var(--cap-gruen)",
+  gelb:"var(--cap-gelb)", beige:"var(--cap-beige)", obst:"var(--cap-obst)", gemuese:"var(--cap-gemuese)",
+  rot:"var(--cap-rot)", rosa:"var(--cap-rosa)", orange:"var(--cap-orange)", schwarz:"var(--cap-schwarz)"
+};
+const DB_URL  = "https://mci84-kasse-default-rtdb.europe-west1.firebasedatabase.app";
+const DB_PATH = "plaene/mci-84";
+
+function nutzerName(raw){
+  let s = (raw || "").trim().replace(/\s+/g, "-").replace(/[.$#\[\]\/\\?&%\x00-\x1f]/g, "").slice(0, 30);
+  if(!s) return null;
+  return { id: s.toLowerCase(), name: s.charAt(0).toUpperCase() + s.slice(1) };
+}
+const norm = k => ({
+  r:+k.r, c:+k.c, w:+k.w || 1, h:+k.h || 1, label:k.label ?? "",
+  cat: CATS[k.cat] ? k.cat : "blanko",
+  state: ["belegt","flex","frei"].includes(k.state) ? k.state : "belegt",
+  icon: /^[a-z0-9_-]{1,24}$/i.test(k.icon || "") ? String(k.icon) : ""
+});
+
+let keys = [], user = null, stand = "";
+const $ = id => document.getElementById(id);
+const opt = () => ({
+  farbe: $("o-farbe").checked, icons: $("o-icons").checked, pos: $("o-pos").checked,
+  marken: $("o-marken").checked, nurIcons: $("o-nur-icons").checked
+});
+function show(msg, cls){ const e = $("sync"); e.textContent = msg; e.className = "sync " + (cls || ""); }
+const zeit = iso => { const d = iso ? new Date(iso) : new Date();
+  return d.toLocaleDateString("de-DE") + " " + d.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"}); };
+
+function render(){
+  const o = opt();
+  const f = $("feld"); f.innerHTML = "";
+  $("blatt").classList.toggle("marken", o.marken);
+  const P = 19.05, IW = 12.8, IH = 13.1;
+
+  for(let c = 1; c <= COLS; c++){
+    const d = document.createElement("div"); d.className = "rt";
+    d.style.left = ((c-1)*P) + "mm"; d.textContent = String(c).padStart(2,"0"); f.appendChild(d);
+  }
+  for(let r = 1; r <= ROWS; r++){
+    const d = document.createElement("div"); d.className = "rl";
+    d.style.top = ((r-1)*P) + "mm"; d.textContent = ROWL[r-1]; f.appendChild(d);
+  }
+
+  let n = 0;
+  keys.forEach(k => {
+    const frei = k.state === "frei";
+    if(o.nurIcons && !k.icon) return;
+    const w = IW + (k.w-1)*P, h = IH + (k.h-1)*P;
+    const e = document.createElement("div");
+    e.className = "e";
+    e.style.left   = ((k.c-1)*P + (P-IW)/2) + "mm";
+    e.style.top    = ((k.r-1)*P + (P-IH)/2) + "mm";
+    e.style.width  = w + "mm";
+    e.style.height = h + "mm";
+
+    const inner = document.createElement("div"); inner.className = "inner";
+    const host = o.marken ? inner : e;
+    if(o.marken) e.appendChild(inner);
+
+    if(frei){
+      e.classList.add("leer");
+      if(o.farbe) e.classList.add("grau");
+      const t = document.createElement("span"); t.className = "t"; t.textContent = "frei"; host.appendChild(t);
+    } else {
+      n++;
+      if(o.farbe){
+        e.style.background = CATS[k.cat];
+        if(k.cat === "schwarz") e.classList.add("dark");
+      }
+      if(k.icon && o.icons){
+        const im = document.createElement("img");
+        im.src = "icons/" + encodeURIComponent(k.icon) + ".png"; im.alt = k.label;
+        if(k.w > 1 || k.h > 1){ im.style.width = im.style.height = Math.min(w, h) - 1 + "mm"; }
+        im.onerror = () => { im.replaceWith(textNode(k)); fit(host); };
+        host.appendChild(im);
+      } else {
+        host.appendChild(textNode(k));
+      }
+      if(o.pos){
+        const p = document.createElement("span"); p.className = "pos";
+        p.textContent = ROWL[k.r-1] + String(k.c).padStart(2,"0"); host.appendChild(p);
+      }
+    }
+    if(o.marken){
+      ["tl","tr","bl","br"].forEach(q => ["h","v"].forEach(a => {
+        const s = document.createElement("i"); s.className = "sm " + q + " " + a; e.appendChild(s);
+      }));
+    }
+    f.appendChild(e);
+    fit(host);
+  });
+  $("fuss").textContent = n + " Einleger" + (o.nurIcons ? " (nur Icons)" : "") + " · gedruckt " + zeit();
+}
+
+function textNode(k){
+  const t = document.createElement("span"); t.className = "t";
+  // ein einzelnes Prozentzeichen bleibt bei seiner Zahl („Pfand 7 %“ bricht nicht vor dem %)
+  t.textContent = k.label.replace(/ %/g, "\u00a0%");
+  if(/^[0-9,]{1,2}$|^[0-9]$/.test(k.label)) t.dataset.kind = "digit";
+  if(/^[←↑→↓∗*]$/.test(k.label)) t.dataset.kind = "pfeil";
+  return t;
+}
+
+// Schrift so weit verkleinern, dass die Beschriftung in den Einleger passt;
+// erst wenn das bis zur Mindestgröße nicht reicht, wird getrennt
+function fit(host){
+  const t = host.querySelector(".t"); if(!t) return;
+  const e = host.classList.contains("inner") ? host.parentElement : host;
+  if(t.dataset.kind === "digit") e.classList.add("digit");
+  if(t.dataset.kind === "pfeil") e.classList.add("pfeil");
+  if(e.classList.contains("leer")) return;
+  let mm = t.dataset.kind ? 5.2 : 2.6;
+  const min = 1.7;
+  t.style.fontSize = mm + "mm";
+  const passt = () => t.scrollWidth <= host.clientWidth - 1 && t.scrollHeight <= host.clientHeight - 1;
+  let guard = 0;
+  while(!passt() && mm > min && guard++ < 40){ mm -= 0.1; t.style.fontSize = mm.toFixed(2) + "mm"; }
+  if(!passt()){
+    e.classList.add("trenn"); mm = t.dataset.kind ? 5.2 : 2.6; t.style.fontSize = mm + "mm"; guard = 0;
+    while(!passt() && mm > min && guard++ < 40){ mm -= 0.1; t.style.fontSize = mm.toFixed(2) + "mm"; }
+  }
+}
+
+async function laden(u){
+  user = nutzerName(u);
+  if(!user){ show("Bitte einen Namen eingeben — den Plan gibt es unter …/kassentastatur/Name.", "err"); return; }
+  $("name").value = user.name;
+  history.replaceState(null, "", "?u=" + encodeURIComponent(user.id));
+  show("Lade Plan von " + user.name + " …");
+  try{
+    const r = await fetch(`${DB_URL}/${DB_PATH}/${encodeURIComponent(user.id)}.json`, {cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    if(!d || typeof d.keys !== "string") throw new Error("kein Plan unter diesem Namen");
+    keys = JSON.parse(d.keys).map(norm).sort((a,b) => a.r-b.r || a.c-b.c);
+    stand = zeit(d.updatedAt);
+    $("titel").textContent = "Tastenkappen MCI 84 · " + user.name;
+    $("stand").textContent = "· Belegung Stand " + stand;
+    document.title = "MCI 84 · Tastenkappen · " + user.name;
+    render();
+    show(`Plan von ${user.name} geladen · Stand ${stand} · ${keys.length} Tasten`, "ok");
+  }catch(e){
+    show("Plan konnte nicht geladen werden (" + e.message + ").", "err");
+  }
+}
+
+$("b-laden").onclick = () => laden($("name").value);
+$("name").addEventListener("keydown", e => { if(e.key === "Enter") laden($("name").value); });
+["o-farbe","o-icons","o-pos","o-marken","o-nur-icons"].forEach(id => $(id).onchange = render);
+$("b-print").onclick = () => window.print();
+$("b-json").onclick = () => {
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = "application/json,.json";
+  inp.onchange = () => {
+    const f = inp.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try{
+        const d = JSON.parse(rd.result);
+        const arr = Array.isArray(d.keys) ? d.keys : JSON.parse(d.keys);
+        keys = arr.map(norm).sort((a,b) => a.r-b.r || a.c-b.c);
+        $("titel").textContent = "Tastenkappen MCI 84 · " + f.name;
+        $("stand").textContent = "";
+        render(); show(`Geladen: ${f.name} · ${keys.length} Tasten`, "ok");
+      }catch(err){ show("Datei nicht lesbar (" + err.message + ").", "err"); }
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+};
+
+const u0 = new URLSearchParams(location.search).get("u") || decodeURIComponent(location.hash.slice(1));
+if(u0) laden(u0); else show("Namen eingeben und auf Laden drücken — oder die Seite mit ?u=Name aufrufen.");
+</script>
+</body></html>
