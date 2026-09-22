@@ -315,7 +315,12 @@ $("b-json").onclick = () => {
   inp.click();
 };
 
-const u0 = new URLSearchParams(location.search).get("u") || decodeURIComponent(location.hash.slice(1));
+// Schalter auch über die Adresse setzbar, z. B. ?u=Oliver&farbe=0&pos=1
+const Q = new URLSearchParams(location.search);
+[["farbe","o-farbe"],["icons","o-icons"],["pos","o-pos"],["marken","o-marken"],["nur","o-nur-icons"]].forEach(([q,id]) => {
+  if(Q.has(q)) $(id).checked = !["0","nein","false"].includes(Q.get(q).toLowerCase());
+});
+const u0 = Q.get("u") || decodeURIComponent(location.hash.slice(1));
 if(u0) laden(u0); else show("Namen eingeben und auf Laden drücken — oder die Seite mit ?u=Name aufrufen.");
 </script>
 </body></html>
