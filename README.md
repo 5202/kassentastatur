@@ -26,6 +26,8 @@ der die Adresse kennt.
     database.rules.json   Zugriffsregeln der Firebase Realtime Database
     firebase.json         Firebase-Konfiguration (nur Datenbank, kein Hosting)
     robots.txt            hält Suchmaschinen fern
+    icons/                Tasten-Icons 200 × 200 px, Dateiname = PLU bzw. Warengruppe
+    icons/original/       Gemini-Ausgangsbilder 1024 px zu jedem Icon
 
 
 ## Bedienung
