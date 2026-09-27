@@ -25,6 +25,7 @@ der die Adresse kennt.
     robots.txt            hält Suchmaschinen fern
     icons/                Tasten-Icons 200 × 200 px, Dateiname = PLU bzw. Warengruppe
     icons/original/       Gemini-Ausgangsbilder 1024 px zu jedem Icon
+    plaene/               eingefrorene Pläne aus Firebase (mci-84-oliver.json = finale Belegung)
 
 
 ## Bedienung

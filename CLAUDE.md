@@ -29,6 +29,10 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
 
 ## Belegung und Fachregeln
 
+- **Finale Belegung** für die Programmierung: `plaene/mci-84-oliver.json`
+  (Export aus Firebase `plaene/mci-84/oliver`, Stand 22.09.2026 20:47, 80 Tasten,
+  `r`/`c` = Zeile A–G / Spalte 01–12, `w`/`h` = Tastengröße). Firebase kann sich
+  weiter ändern; bei Abweichung neu exportieren und committen.
 - Obst/Gemüse nach PLU-Nummernkreis trennen: 400–599 Gemüse, 600–699 Obst.
   **Ingwer (PLU 633) ist Obst** — ohne Nachfrage beim Obst lassen.
 - Keine Saisonartikel auf die Tasten (deshalb Brokkoli 481 statt Feldsalat 541).

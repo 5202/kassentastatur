@@ -1,0 +1,809 @@
+{
+ "cols": 12,
+ "keys": [
+  {
+   "r": 1,
+   "c": 1,
+   "w": 1,
+   "h": 1,
+   "label": "ESC",
+   "cat": "blau",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 1,
+   "c": 2,
+   "w": 1,
+   "h": 1,
+   "label": "Äpfel",
+   "cat": "obst",
+   "state": "belegt",
+   "icon": "600"
+  },
+  {
+   "r": 1,
+   "c": 3,
+   "w": 1,
+   "h": 1,
+   "label": "Birnen",
+   "cat": "obst",
+   "state": "belegt",
+   "icon": "620"
+  },
+  {
+   "r": 1,
+   "c": 4,
+   "w": 1,
+   "h": 1,
+   "label": "Zitronen",
+   "cat": "obst",
+   "state": "belegt",
+   "icon": "698"
+  },
+  {
+   "r": 1,
+   "c": 5,
+   "w": 1,
+   "h": 1,
+   "label": "Strauchtomaten",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "581"
+  },
+  {
+   "r": 1,
+   "c": 6,
+   "w": 1,
+   "h": 1,
+   "label": "Zwiebeln gelb",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "595"
+  },
+  {
+   "r": 1,
+   "c": 7,
+   "w": 1,
+   "h": 1,
+   "label": "Spitzpaprika",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "519"
+  },
+  {
+   "r": 1,
+   "c": 8,
+   "w": 1,
+   "h": 1,
+   "label": "Karotten",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "465"
+  },
+  {
+   "r": 1,
+   "c": 9,
+   "w": 1,
+   "h": 1,
+   "label": "Gurken",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "460"
+  },
+  {
+   "r": 1,
+   "c": 10,
+   "w": 1,
+   "h": 1,
+   "label": "Paprika rot",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "515"
+  },
+  {
+   "r": 1,
+   "c": 11,
+   "w": 1,
+   "h": 1,
+   "label": "Fleisch",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": "fleisch"
+  },
+  {
+   "r": 1,
+   "c": 12,
+   "w": 1,
+   "h": 1,
+   "label": "Käse",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": "kaese"
+  },
+  {
+   "r": 2,
+   "c": 1,
+   "w": 1,
+   "h": 1,
+   "label": "WIN",
+   "cat": "blau",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 2,
+   "c": 2,
+   "w": 1,
+   "h": 1,
+   "label": "Avocado",
+   "cat": "obst",
+   "state": "belegt",
+   "icon": "628"
+  },
+  {
+   "r": 2,
+   "c": 3,
+   "w": 1,
+   "h": 1,
+   "label": "Bananen",
+   "cat": "obst",
+   "state": "belegt",
+   "icon": "605"
+  },
+  {
+   "r": 2,
+   "c": 4,
+   "w": 1,
+   "h": 1,
+   "label": "Orangen",
+   "cat": "obst",
+   "state": "belegt",
+   "icon": "690"
+  },
+  {
+   "r": 2,
+   "c": 5,
+   "w": 1,
+   "h": 1,
+   "label": "Zucchini",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "590"
+  },
+  {
+   "r": 2,
+   "c": 6,
+   "w": 1,
+   "h": 1,
+   "label": "Champignons",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "525"
+  },
+  {
+   "r": 2,
+   "c": 7,
+   "w": 1,
+   "h": 1,
+   "label": "Kartoffeln",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "475"
+  },
+  {
+   "r": 2,
+   "c": 8,
+   "w": 1,
+   "h": 1,
+   "label": "Brokkoli",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "481"
+  },
+  {
+   "r": 2,
+   "c": 9,
+   "w": 1,
+   "h": 1,
+   "label": "Lauch",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "510"
+  },
+  {
+   "r": 2,
+   "c": 10,
+   "w": 1,
+   "h": 1,
+   "label": "Minigurken",
+   "cat": "gemuese",
+   "state": "belegt",
+   "icon": "462"
+  },
+  {
+   "r": 2,
+   "c": 11,
+   "w": 1,
+   "h": 1,
+   "label": "Eier lose",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": "401"
+  },
+  {
+   "r": 2,
+   "c": 12,
+   "w": 1,
+   "h": 1,
+   "label": "Brot",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": "brot"
+  },
+  {
+   "r": 3,
+   "c": 1,
+   "w": 1,
+   "h": 1,
+   "label": "Kein Kunde",
+   "cat": "blau",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 2,
+   "w": 1,
+   "h": 1,
+   "label": "5% Bon",
+   "cat": "rosa",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 3,
+   "w": 1,
+   "h": 1,
+   "label": "10% Bon",
+   "cat": "rosa",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 4,
+   "w": 1,
+   "h": 1,
+   "label": "20% MA",
+   "cat": "rosa",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 5,
+   "w": 1,
+   "h": 1,
+   "label": "Artikel 7%",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 6,
+   "w": 1,
+   "h": 1,
+   "label": "Artikel 19 %",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 7,
+   "w": 1,
+   "h": 1,
+   "label": "10 %",
+   "cat": "rosa",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 8,
+   "w": 1,
+   "h": 1,
+   "label": "15 %",
+   "cat": "rosa",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 9,
+   "w": 1,
+   "h": 1,
+   "label": "30 %",
+   "cat": "rosa",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 10,
+   "w": 1,
+   "h": 1,
+   "label": "50 %",
+   "cat": "rosa",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 11,
+   "w": 1,
+   "h": 1,
+   "label": "Bestellt 5 %",
+   "cat": "gelb",
+   "state": "flex",
+   "icon": ""
+  },
+  {
+   "r": 3,
+   "c": 12,
+   "w": 1,
+   "h": 1,
+   "label": "Gebinde",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 1,
+   "w": 1,
+   "h": 1,
+   "label": "Fn",
+   "cat": "blau",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 2,
+   "w": 1,
+   "h": 1,
+   "label": "Einzahlung",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 3,
+   "w": 1,
+   "h": 1,
+   "label": "Storno",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 4,
+   "w": 1,
+   "h": 1,
+   "label": "Storno alles",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 5,
+   "w": 1,
+   "h": 1,
+   "label": "Schublade",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 6,
+   "w": 1,
+   "h": 1,
+   "label": "Zwisch. Summe",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 7,
+   "w": 1,
+   "h": 1,
+   "label": "Tara",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 8,
+   "w": 1,
+   "h": 1,
+   "label": "7",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 9,
+   "w": 1,
+   "h": 1,
+   "label": "8",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 10,
+   "w": 1,
+   "h": 1,
+   "label": "9",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 11,
+   "w": 1,
+   "h": 1,
+   "label": "C",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 4,
+   "c": 12,
+   "w": 1,
+   "h": 1,
+   "label": "Retour −",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 1,
+   "w": 1,
+   "h": 1,
+   "label": "Bon parken",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 2,
+   "w": 1,
+   "h": 1,
+   "label": "Auszahlung",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 3,
+   "w": 1,
+   "h": 1,
+   "label": "Menü",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 4,
+   "w": 1,
+   "h": 1,
+   "label": "Gutschein",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 5,
+   "w": 1,
+   "h": 1,
+   "label": "Kunde",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 6,
+   "w": 1,
+   "h": 1,
+   "label": "Gutschrift",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 7,
+   "w": 1,
+   "h": 1,
+   "label": "Kredit",
+   "cat": "rot",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 8,
+   "w": 1,
+   "h": 1,
+   "label": "4",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 9,
+   "w": 1,
+   "h": 1,
+   "label": "5",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 10,
+   "w": 1,
+   "h": 1,
+   "label": "6",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 11,
+   "w": 1,
+   "h": 1,
+   "label": "Pfand 7 %",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 5,
+   "c": 12,
+   "w": 1,
+   "h": 1,
+   "label": "Pfand 19 %",
+   "cat": "beige",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 1,
+   "w": 1,
+   "h": 1,
+   "label": "←",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 2,
+   "w": 1,
+   "h": 1,
+   "label": "↑",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 3,
+   "w": 1,
+   "h": 1,
+   "label": "→",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 4,
+   "w": 1,
+   "h": 1,
+   "label": "Menge",
+   "cat": "gelb",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 5,
+   "w": 1,
+   "h": 1,
+   "label": "EAN",
+   "cat": "gelb",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 6,
+   "w": 1,
+   "h": 1,
+   "label": "Bar",
+   "cat": "rot",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 7,
+   "w": 1,
+   "h": 1,
+   "label": "EC",
+   "cat": "rot",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 8,
+   "w": 1,
+   "h": 1,
+   "label": "1",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 9,
+   "w": 1,
+   "h": 1,
+   "label": "2",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 10,
+   "w": 1,
+   "h": 1,
+   "label": "3",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 6,
+   "c": 11,
+   "w": 2,
+   "h": 2,
+   "label": "Enter",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 1,
+   "w": 1,
+   "h": 1,
+   "label": "Abmelden",
+   "cat": "gruen",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 2,
+   "w": 1,
+   "h": 1,
+   "label": "↓",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 3,
+   "w": 1,
+   "h": 1,
+   "label": "TAB",
+   "cat": "blau",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 4,
+   "w": 1,
+   "h": 1,
+   "label": "Preis",
+   "cat": "gelb",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 5,
+   "w": 1,
+   "h": 1,
+   "label": "Rabatt",
+   "cat": "gelb",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 6,
+   "w": 2,
+   "h": 1,
+   "label": "Drucken Bezahlen",
+   "cat": "weiss",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 8,
+   "w": 1,
+   "h": 1,
+   "label": "0",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 9,
+   "w": 1,
+   "h": 1,
+   "label": "00",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  },
+  {
+   "r": 7,
+   "c": 10,
+   "w": 1,
+   "h": 1,
+   "label": ",",
+   "cat": "schwarz",
+   "state": "belegt",
+   "icon": ""
+  }
+ ],
+ "name": "Oliver",
+ "rows": 7,
+ "tasten": 80,
+ "updatedAt": "2026-09-22T18:47:06.010423Z"
+}
