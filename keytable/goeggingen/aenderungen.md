@@ -48,4 +48,4 @@ Positionen: **Plan** = Zählung der Plan-Seite `mci-84.html` (A oben),
 | E11 | C11 | Pfand 7 % | `#` | `y` | Pfand 7 % war Tastatur E11; ArtikelNr. `#` fällt weg |
 | E12 | C12 | Pfand 19 % | `*` | `z` | Pfand 19 % war Tastatur E12; `*` und Fn-Ebene `+` fallen weg |
 
-Offen: Plan E07 „Kredit“ (Tastatur C07) sendet in G `{ALT+t}` wie Tara (D07) — bleibt vorerst so.
+Bewusst unverändert: Plan E07 „Kredit“ (Tastatur C07) sendet in G `{ALT+t}` wie Tara (D07).
