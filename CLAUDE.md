@@ -9,22 +9,37 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
 
 ## Tastaturprogrammierung MCI 84
 
-- PrehKeyTec-Tool: **WinProgrammer** (nur Windows). Übertragung auf die
-  Tastatur per **C2K** („Copy to Keyboard“, im WinProgrammer-Paket enthalten).
-- Keytable-Formate: `.mwf` = editierbarer Text (cp1252, CRLF — beim Bearbeiten
-  so lassen), `.mwx` = binär, wird per C2K übertragen.
+- **Gearbeitet wird am Layout Göggingen** (`keytable/goeggingen`, „G“).
+  `keytable/kasse1` und `kasse2` sind **Leitershofen** und dienen nur zum
+  Nachschlagen, wie Details dort gelöst sind.
+- PrehKeyTec-Tool: **WinProgrammer** 2.5 Build 20213 (nur Windows, Download
+  auf prehkeytec.com → Support → Keyboards, `WinProg_Latest.zip`). Übertragung
+  auf die Tastatur per **C2K** („Copy to Keyboard“, im Paket enthalten).
+  „Read…“ in C2K liest die Tastatur als `.mwx` aus (`Upload = 1` in `c2k.ini`);
+  gespeichert wird wegen Program Files im VirtualStore
+  (`%LOCALAPPDATA%\VirtualStore\Program Files (x86)\PrehKeyTec\WinProg\`).
+- `Mwx2Mwf.exe` aus dem Paket läuft hier nicht (VB6, `COMDLG32.OCX` fehlt).
+  Stattdessen `node tools/mwxdecode.js <datei.mwx>`; an beiden
+  Leitershofen-Paaren `.mwx`/`.MWF` mit `tools/verify.js` geprüft (alle
+  Belegungen gleich). Die `.mwx` enthält nur Belegungen, keine Beschriftungen.
+- Keytable-Formate: `.mwf` = editierbarer Text (CRLF — beim Bearbeiten so
+  lassen; Beschriftungen `!@KEYPRINT` in cp1252, Belegungstexte in **cp850**,
+  z. B. ü = `81`), `.mwx` = binär, wird per C2K übertragen.
 - `BioBillKB.exe` auf den Kassen ist **nicht** das Tastatur-Tool, sondern das
   Kassenbuch/Schubladen-Modul.
-- Die Keytables liegen auf Kasse1 im BioBill-Ordner unter `Daten\update\`,
-  die von Kasse2 als Kopie auf Kasse1 unter `Daten\K2\BioBill\Daten\update\`.
-  Beide Stände sind byte-gleich im Repo (abgeglichen 27.09.2026):
-  - `keytable/kasse1`: `BB_…MWF` (26.06.2025, Belegungen mit Flag `/K/A/P/L`)
-    mit passender `.mwx` (25.06.2025); `XBB_…MWF` (25.06.2025, Flag `/K/P/L`).
-  - `keytable/kasse2`: `BB_…MWF` (02.12.2025) = wie XBB, aber F04–F06 mit
-    `+{DEL}{DELAY}` vor 10/25/50. Die `.mwx` dort ist von 22.08.2023, also
-    **älter** als die MWF — ob die Dezember-Änderung wirklich auf der Tastatur
-    ist, ist offen. Im Zweifel die Belegung an der Tastatur selbst prüfen.
-- WinProgrammer-Installer liegt auf Kasse1 unter
+- **Göggingen**: `goeggingen_original.mwx` am 27.09.2026 von der Test-Tastatur
+  (Original aus Göggingen) an Olivers Rechner ausgelesen, lesbar in
+  `goeggingen_original.txt`. Zuschläge auf E06–E09 (10/15/30/50, ohne `+`).
+- **Leitershofen**: Die Keytables liegen auf Kasse1 im BioBill-Ordner unter
+  `Daten\update\`, die von Kasse2 als Kopie auf Kasse1 unter
+  `Daten\K2\BioBill\Daten\update\`, byte-gleich im Repo (27.09.2026).
+  Beide Kassen unterscheiden sich nur in F04–F06:
+  - Kasse1-`.mwx` (25.06.2025) = `kasse1/XBB_…MWF`: `{SHIFT+ALT+5}+10{ENTER}`.
+  - Kasse2-`.mwx` (22.08.2023) = `kasse2/XBB_…MWF`: `{SHIFT+ALT+5}10{ENTER}`.
+  - Beide `BB_…MWF` haben `+{DEL}{DELAY}` vor 10/25/50 und sind laut `.mwx`
+    auf keiner Tastatur; sie unterscheiden sich untereinander nur im Flag `/A`.
+  Ob die `.mwx`-Kopien wirklich auf den Tastaturen sind, zeigt nur Auslesen.
+- WinProgrammer-Installer liegt auch auf Kasse1 unter
   `Downloads\WinProg_Latest\Winprog25_Build20213.EXE`.
 
 ## Belegung und Fachregeln
