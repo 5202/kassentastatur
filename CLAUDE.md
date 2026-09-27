@@ -20,10 +20,18 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
   Beide Stände sind byte-gleich im Repo (abgeglichen 27.09.2026):
   - `keytable/kasse1`: `BB_…MWF` (26.06.2025, Belegungen mit Flag `/K/A/P/L`)
     mit passender `.mwx` (25.06.2025); `XBB_…MWF` (25.06.2025, Flag `/K/P/L`).
-  - `keytable/kasse2`: `BB_…MWF` (02.12.2025) = wie XBB, aber F04–F06 mit
-    `+{DEL}{DELAY}` vor 10/25/50. Die `.mwx` dort ist von 22.08.2023, also
-    **älter** als die MWF — ob die Dezember-Änderung wirklich auf der Tastatur
-    ist, ist offen. Im Zweifel die Belegung an der Tastatur selbst prüfen.
+  - `keytable/kasse2`: `BB_…MWF` (02.12.2025), `XBB_…MWF` und `.mwx` (22.08.2023).
+- Andere oder ältere Stände gibt es auf beiden Kassen nicht (beide Rechner
+  komplett durchsucht am 27.09.2026). Versionsgeschichte F04–F06 (F05/F06
+  analog mit 25/50):
+  1. 22.08.2023, Kasse2 `XBB` + `.mwx`: `{SHIFT+ALT+5}10{ENTER}`
+  2. 25.06.2025, Kasse1 `XBB` + `.mwx`: `{SHIFT+ALT+5}+10{ENTER}`
+  3. 26.06.2025 Kasse1 / 02.12.2025 Kasse2, `BB_…MWF`:
+     `{SHIFT+ALT+5}+{DEL}{DELAY}10{ENTER}` — als `.mwx` nie gespeichert,
+     also wohl direkt aus dem WinProgrammer übertragen.
+- `.mwx` lesen: Kopf `Preh`, Makros als Set-1-Scancodes (Make/Break), z. B.
+  `2a 38 06 86 aa b8` = Shift+Alt+5, `1b 9b` = `+` (deutsches Layout),
+  `0b 8b` = 0, `e0 1c e0 9c` = Enter (Ziffernblock).
 - WinProgrammer-Installer liegt auf Kasse1 unter
   `Downloads\WinProg_Latest\Winprog25_Build20213.EXE`.
 
