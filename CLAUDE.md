@@ -9,6 +9,13 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
 
 ## Tastaturprogrammierung MCI 84
 
+- **Zwei Zeilenzählungen!** Plan-Seite (`mci-84.html`, JSON `r` = 1…7) zählt
+  **A = oberste** Zeile, Tastatur/WinProgrammer/`.mwx` zählt **A = unterste**
+  Zeile. Spalten 01–12 sind gleich. Plan A B C D E F G = Tastatur G F E D C B A.
+  Oliver nennt Tasten nach der Plan-Seite; in Tastatur-Positionen umrechnen und
+  immer beide nennen. Änderungen für G stehen in
+  `keytable/goeggingen/aenderungen.md`.
+
 - **Gearbeitet wird am Layout Göggingen** (`keytable/goeggingen`, „G“).
   `keytable/kasse1` und `kasse2` sind **Leitershofen** und dienen nur zum
   Nachschlagen, wie Details dort gelöst sind.
@@ -46,7 +53,8 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
 
 - **Finale Belegung** für die Programmierung: `plaene/mci-84-oliver.json`
   (Export aus Firebase `plaene/mci-84/oliver`, Stand 22.09.2026 20:47, 80 Tasten,
-  `r`/`c` = Zeile A–G / Spalte 01–12, `w`/`h` = Tastengröße). Firebase kann sich
+  `r`/`c` = Zeile A–G der Plan-Seite (1 = A = oben) / Spalte 01–12,
+  `w`/`h` = Tastengröße). Firebase kann sich
   weiter ändern; bei Abweichung neu exportieren und committen.
 - Obst/Gemüse nach PLU-Nummernkreis trennen: 400–599 Gemüse, 600–699 Obst.
   **Ingwer (PLU 633) ist Obst** — ohne Nachfrage beim Obst lassen.
