@@ -3,3 +3,6 @@ sicherungen/
 
 # CLI-Protokolle
 firebase-debug.log
+
+# macOS
+.DS_Store
