@@ -15,13 +15,15 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
   so lassen), `.mwx` = binär, wird per C2K übertragen.
 - `BioBillKB.exe` auf den Kassen ist **nicht** das Tastatur-Tool, sondern das
   Kassenbuch/Schubladen-Modul.
-- Die Keytables liegen auf den Kassen im BioBill-Ordner unter `Daten\update\`.
-  Kopien im Repo unter `keytable/kasse1` und `keytable/kasse2`:
-  - `BB_Siebenfrisch_03.09.MWF/.mwx` (26.06.2025, Belegungen mit Flag `/K/A/P/L`)
-  - `XBB_Siebenfrisch_03.09.MWF` (25.06.2025, Flag `/K/P/L`)
-  - Auf Kasse1 gibt es unter `Daten\K2\BioBill\Daten\update\` eine neuere
-    `BB_Siebenfrisch_03.09.MWF` (02.12.2025): wie XBB, aber F04–F06 mit
-    `{DEL}{DELAY}` vor +10/+25/+50. Diese Variante ist noch **nicht** im Repo.
+- Die Keytables liegen auf Kasse1 im BioBill-Ordner unter `Daten\update\`,
+  die von Kasse2 als Kopie auf Kasse1 unter `Daten\K2\BioBill\Daten\update\`.
+  Beide Stände sind byte-gleich im Repo (abgeglichen 27.09.2026):
+  - `keytable/kasse1`: `BB_…MWF` (26.06.2025, Belegungen mit Flag `/K/A/P/L`)
+    mit passender `.mwx` (25.06.2025); `XBB_…MWF` (25.06.2025, Flag `/K/P/L`).
+  - `keytable/kasse2`: `BB_…MWF` (02.12.2025) = wie XBB, aber F04–F06 mit
+    `+{DEL}{DELAY}` vor 10/25/50. Die `.mwx` dort ist von 22.08.2023, also
+    **älter** als die MWF — ob die Dezember-Änderung wirklich auf der Tastatur
+    ist, ist offen. Im Zweifel die Belegung an der Tastatur selbst prüfen.
 - WinProgrammer-Installer liegt auf Kasse1 unter
   `Downloads\WinProg_Latest\Winprog25_Build20213.EXE`.
 
