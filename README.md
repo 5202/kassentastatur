@@ -6,8 +6,6 @@ Abhängigkeiten — im Browser öffnen genügt, auch offline.
 
 - **MCI 84** — `mci-84.html`
 - **MCI 128** — `mci-128.html`, Belegung aus der 84 übernommen
-- **Tastenstatistik MCI 84** — `mci-84-tasten.html`, Anschläge je Taste (Warengruppen,
-  Funktionen, Rabatte, Ziffern) im letzten Jahr auf der Ist-Belegung, mit Gütestufe je Zahl
 - **Tastenkappen drucken** — `mci-84-druck.html?u=Name`, Einleger für die Klarsichtkappen
   in Originalgröße (A4 quer, 1 : 1), aus dem gespeicherten Plan der Person
 
@@ -20,7 +18,6 @@ der die Adresse kennt.
     index.html            Übersicht mit beiden Plänen und der Liste der Testpläne
     mci-84.html           7 × 12, 84 Positionen — speichert mit Namen im Netz
     mci-128.html          8 × 16, 128 Positionen
-    mci-84-tasten.html    Ist-Belegung mit Anschlägen je Taste, Stand 09/2026
     mci-84-druck.html     Druckvorlage für die Tastenkappen-Einleger (A4 quer, 1 : 1)
     404.html              leitet …/kassentastatur/Daniel auf mci-84.html?u=Daniel
     database.rules.json   Zugriffsregeln der Firebase Realtime Database
