@@ -101,7 +101,7 @@ Warengruppen- und Funktionstasten tippen den Buchstaben des A–Z-Artikels.
 Beträge und Prozentsätze stehen im Artikel bzw. Kundenkonto (BioOffice), nicht
 in der Taste — Änderungen dort brauchen keine Neuprogrammierung. Offen/zu
 testen: Aufruf der Rabattkonten (5 %/10 %/Mitarbeiter 20 %) per Taste;
-Details und Prüfergebnisse im privaten Repo Bios-SQL.
+Details und Prüfergebnisse im privaten Repo `gemeinsam-sql-kochbuch` (`~/Projekte/gemeinsam/sql-kochbuch`).
 
 ## Belegung und Fachregeln
 
@@ -116,7 +116,7 @@ Details und Prüfergebnisse im privaten Repo Bios-SQL.
 - Olivers Plan (`plaene/mci-84/oliver`, Stand 16.09.2026): 18 O&G-Tasten mit den
   Top 18 nach Bonzeilen über Obst und Gemüse **zusammen** (nicht 10 + 10):
   Obst 600 605 698 690 620 628, Gemüse 465 460 515 595 525 519 581 590 475 510
-  462 481. Datenquelle: `queries/og_plu_top.sql` im Repo Bios-SQL.
+  462 481. Datenquelle: `queries/og_plu_top.sql` im SQL-Kochbuch (`~/Projekte/gemeinsam/sql-kochbuch`).
 - Alle 22 Tasten in Zeile 1–2 (außer ESC/WIN) tragen ein Icon. C11 heißt
   „Bestellt 5 %“, D12 Retour ist Weiß/Funktion.
 
