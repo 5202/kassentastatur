@@ -26,7 +26,7 @@ der die Adresse kennt.
     icons/                Tasten-Icons 200 × 200 px, Dateiname = PLU bzw. Warengruppe
     icons/original/       Gemini-Ausgangsbilder 1024 px zu jedem Icon
     plaene/               eingefrorene Pläne aus Firebase (mci-84-oliver.json = finale Belegung)
-    keytable/             PrehKeyTec-Keytables (.MWF/.mwx): goeggingen, kasse1/kasse2 = Leitershofen
+    keytable/             PrehKeyTec-Keytables (.MWF/.mwx): goeggingen/, leitershofen/kasse1 + kasse2
     tools/mwxdecode.js    liest eine .mwx lesbar aus (node tools/mwxdecode.js datei.mwx)
 
 

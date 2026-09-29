@@ -2,7 +2,7 @@
 //   - keytable/goeggingen/goeggingen_original.mwx  (Ausgangsbelegung G)
 //   - keytable/goeggingen/aenderungen.md           (neue Belegungen, Spalte „Tastatur“)
 //   - plaene/mci-84-oliver.json                    (Kappenbeschriftung und Farbe)
-//   - keytable/kasse1/XBB_Siebenfrisch_03.09.MWF   (Kopf, Ebenen, Attribute als Vorlage)
+//   - keytable/leitershofen/kasse1/XBB_Siebenfrisch_03.09.MWF   (Kopf, Ebenen, Attribute als Vorlage)
 // Aufruf: node tools/build-mwf.js [ausgabe.MWF]
 const fs = require('fs'), path = require('path');
 const { decode } = require('./mwxdecode');
@@ -25,7 +25,7 @@ function enc1252(s) {
 }
 
 // --- Vorlage ------------------------------------------------------------------
-const tpl = fs.readFileSync(path.join(R, 'keytable/kasse1/XBB_Siebenfrisch_03.09.MWF')).toString('latin1').split('\r\n');
+const tpl = fs.readFileSync(path.join(R, 'keytable/leitershofen/kasse1/XBB_Siebenfrisch_03.09.MWF')).toString('latin1').split('\r\n');
 const iPrint = tpl.findIndex(l => l.startsWith('!@KEYPRINT:'));
 const iAlways = tpl.findIndex(l => l.startsWith('!@KEYLAYER:AlwaysActive'));
 const iNormal = tpl.findIndex(l => l.startsWith('!@KEYLAYER:Normal-Layer'));

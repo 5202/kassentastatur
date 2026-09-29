@@ -18,7 +18,7 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
   Änderungen für G stehen in `keytable/goeggingen/aenderungen.md`.
 
 - **Gearbeitet wird am Layout Göggingen** (`keytable/goeggingen`, „G“).
-  `keytable/kasse1` und `kasse2` sind **Leitershofen** und dienen nur zum
+  `keytable/leitershofen/kasse1` und `kasse2` sind **Leitershofen** und dienen nur zum
   Nachschlagen, wie Details dort gelöst sind.
 - PrehKeyTec-Tool: **WinProgrammer** 2.5 Build 20213 (nur Windows, Download
   auf prehkeytec.com → Support → Keyboards, `WinProg_Latest.zip`). Übertragung
@@ -53,9 +53,9 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
 - **Leitershofen**: Die Keytables liegen auf Kasse1 im BioBill-Ordner unter
   `Daten\update\`, die von Kasse2 als Kopie auf Kasse1 unter
   `Daten\K2\BioBill\Daten\update\`, byte-gleich im Repo (27.09.2026):
-  - `keytable/kasse1`: `BB_…MWF` (26.06.2025, Belegungen mit Flag `/K/A/P/L`)
+  - `keytable/leitershofen/kasse1`: `BB_…MWF` (26.06.2025, Belegungen mit Flag `/K/A/P/L`)
     mit passender `.mwx` (25.06.2025); `XBB_…MWF` (25.06.2025, Flag `/K/P/L`).
-  - `keytable/kasse2`: `BB_…MWF` (02.12.2025), `XBB_…MWF` und `.mwx` (22.08.2023).
+  - `keytable/leitershofen/kasse2`: `BB_…MWF` (02.12.2025), `XBB_…MWF` und `.mwx` (22.08.2023).
   Andere oder ältere Stände gibt es auf beiden Kassen nicht (beide Rechner
   komplett durchsucht am 27.09.2026). Die Kassen unterscheiden sich nur in
   F04–F06 (F05/F06 analog mit 25/50):
