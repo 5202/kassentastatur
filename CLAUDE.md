@@ -50,6 +50,10 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
   Neue Belegung: `node tools/build-mwf.js` baut `goeggingen_neu.MWF` aus
   Original, `aenderungen.md` und `plaene/mci-84-oliver.json`; übertragen und
   zurückgelesen (`goeggingen_neu_read.mwx` byte-gleich) am 27.09.2026.
+  `node tools/build-mwx.js` kompiliert die `.MWF` ohne C2K zur
+  `goeggingen_neu.mwx` (Kopf und D01 aus `goeggingen_neu_read.mwx`); geprüft:
+  der MWF-Stand vom 27.09.2026 ergibt byte-gleich die C2K-Datei. Danach
+  `node tools/mwxdecode.js` → `goeggingen_neu.txt`.
 - **Leitershofen**: Die Keytables liegen auf Kasse1 im BioBill-Ordner unter
   `Daten\update\`, die von Kasse2 als Kopie auf Kasse1 unter
   `Daten\K2\BioBill\Daten\update\`, byte-gleich im Repo (27.09.2026):

@@ -31,9 +31,9 @@ Positionen: **Plan** = Zählung der Plan-Seite `mci-84.html` (A oben),
 | A11 | G11 | Fleisch | `i` | `j` | Warengruppe, Buchstabe laut BioBill |
 | A12 | G12 | Käse | `i` | `b` | Warengruppe, Buchstabe laut BioBill |
 | B12 | F12 | Brot | `r` | `k` | Warengruppe, Buchstabe laut BioBill |
-| C02 | E02 | 5% Bon | `s` | `5{ENTER}` | Fn-Ebene `/` bleibt |
-| C03 | E03 | 10% Bon | `t` | `10{ENTER}` | |
-| C04 | E04 | 20% MA | `u` | `22{ENTER}` | 20 ist in BioBill mit einem Kunden belegt, daher 22; Fn-Ebene `ü` bleibt |
+| C02 | E02 | 5% Bon | `s` | `{ALT+k}n5{ENTER}` | Kundenmenü, Kunde per Nummer 5; `5{ENTER}` allein öffnete das Kundenkonto nicht; Fn-Ebene `/` bleibt |
+| C03 | E03 | 10% Bon | `t` | `{ALT+k}n10{ENTER}` | Kundenmenü, Kunde per Nummer 10 |
+| C04 | E04 | 20% MA | `u` | `{ALT+k}n22{ENTER}` | Kundenmenü, Kunde per Nummer 22; 20 ist in BioBill mit einem Kunden belegt, daher 22; Fn-Ebene `ü` bleibt |
 | C05 | E05 | Artikel 7% | `v` | `a{ENTER}` | |
 | C06 | E06 | Artikel 19 % | `{SHIFT+ALT+5}10{ENTER}` | `h{ENTER}` | bisher Zuschlag 10 |
 | C07 | E07 | 10 % | `{SHIFT+ALT+5}15{ENTER}` | `{SHIFT+ALT+5}10{ENTER}` | Zuschläge um eine Taste nach rechts |
