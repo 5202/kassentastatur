@@ -93,7 +93,7 @@ Warengruppen- und Funktionstasten tippen den Buchstaben des A–Z-Artikels.
 | Artikel 7 % | `a` | A Lebensmittel 7 % |
 | Artikel 19 % | `h` | H Lebensmittel 19 % (neu) |
 | Käse / Fleisch / Brot | `b` / `j` / `k` | Warengruppen-Buchstaben |
-| Gutschrift | `q` `{ENTER}` | Q Gutschrift 0 % MwSt, fester Preis −2,00 € im Artikel — **nicht** zusätzlich Retour drücken |
+| Gutschrift | `q` | Q Gutschrift 0 % MwSt, fester Preis −2,00 € im Artikel — **nicht** zusätzlich Retour drücken; **kein** `{ENTER}`: der Buchstabe bucht Artikel mit festem Preis sofort, ein Enter danach bucht ihn ein zweites Mal |
 | Bestellt 5 % | `w` | W `@Aktion:0:5` (5 % auf den zuletzt erfassten Artikel) |
 | Gebinde | `{ALT+g}` | erst Flasche scannen, dann Taste |
 | Gutschein | `s` | S Gutschein (Altgutscheine, bleibt wie bisher) |

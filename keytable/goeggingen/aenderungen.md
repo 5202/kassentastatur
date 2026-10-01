@@ -43,7 +43,7 @@ Positionen: **Plan** = Zählung der Plan-Seite `mci-84.html` (A oben),
 | C11 | E11 | Bestellt 5 % | `y` | `w{ENTER}` | |
 | D06 | D06 | Zwisch. Summe | `{ALT+h}` | `{ALT+w}` | Zwischensumme, bisher in G auf Tastatur C06 (Plan E06); Leitershofen D06 „Zwisch. Summe“ |
 | E04 | C04 | Gutschein | `{ALT+r}` | `s{ENTER}` | |
-| E06 | C06 | Gutschrift | `{ALT+w}` | `q{ENTER}` | `{ALT+w}` (Zwischensumme) liegt jetzt auf D06 |
+| E06 | C06 | Gutschrift | `{ALT+w}` | `q` | `{ALT+w}` (Zwischensumme) liegt jetzt auf D06; ohne `{ENTER}`, sonst bucht BioBill Q (fester Preis) ein zweites Mal |
 | C12 | E12 | Gebinde | `z` | `{ALT+m}{ALT+g}` | wie bisher in G auf Tastatur F09/F10 (Menü, dann g); Leitershofen F09 „Kiste“ nur `{ALT+g}` |
 | E11 | C11 | Pfand 7 % | `#` | `y` | Pfand 7 % war Tastatur E11; ArtikelNr. `#` fällt weg |
 | E12 | C12 | Pfand 19 % | `*` | `z` | Pfand 19 % war Tastatur E12; `*` und Fn-Ebene `+` fallen weg |
