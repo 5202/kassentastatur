@@ -54,6 +54,28 @@ Adressen oder Konten der Kassen. Solche Angaben bleiben lokal.
   `goeggingen_neu.mwx` (Kopf und D01 aus `goeggingen_neu_read.mwx`); geprüft:
   der MWF-Stand vom 27.09.2026 ergibt byte-gleich die C2K-Datei. Danach
   `node tools/mwxdecode.js` → `goeggingen_neu.txt`.
+- **Keytables auf den Göggingen-Kassen** (geprüft 27.10.2026, beide über die
+  Freigabe `BioBill`):
+  - Kasse 5: `C:\BioBill\Daten\update\BB_Goeggingen_2026-10-01.MWF`/`.mwx`
+    (Ablage wie in Leitershofen).
+  - Kasse 3: `C:\BioBill\Daten\update\goeggingen_neu.MWF`/`.mwx`, am
+    27.10.2026 aus dem Repo kopiert.
+  - Beide Paare wurden byte-gleich aus dem Repo kopiert (Kasse 5 am 01.10.2026
+    um 21:17). Die `.mwx` sind es geblieben. Die `.MWF` auf Kasse 5 wurde am
+    02.10.2026 um 07:44 an der Kasse neu gespeichert, vermutlich im dort
+    installierten WinProgrammer. Seitdem weicht sie nur in Ebenen-Kopfzeilen ab:
+    Z. 273 `!@KEYLAYER:xxxxxsLx,9A2A,1` statt `Fn-Layer,9A2A,0`, am Ende
+    zusätzlich eine leere Ebene `!@KEYLAYER:xxxxxxxk,2AAA,11`. Belegungen und
+    Beschriftungen sind gleich. Die Ebenen-Namen gehen nicht in die `.mwx`
+    (Fn-Belegungen dort immer mit Ebenen-Code `0x0191`).
+  - Am 27.10.2026 die neue Tastatur an Kasse 5 mit C2K „Read…“ ausgelesen
+    (`Daten\update\ausgelesen_2026-10-27.mwx`): byte-gleich mit
+    `goeggingen_neu.mwx` (Stand 01.10.2026). Auf der Tastatur ist also genau
+    der Repo-Stand. Danach die `.MWF` auf Kasse 5 durch die Repo-Fassung
+    ersetzt, seitdem sind alle Dateien auf beiden Kassen byte-gleich mit dem Repo.
+  - Auf Kasse 5 ist der WinProgrammer installiert (öffnet sich per Doppelklick
+    auf eine `.mwf`), liegt aber nicht unter `Program Files (x86)\PrehKeyTec`;
+    den Ordner über Task-Manager → Details → „Dateipfad öffnen“ finden.
 - **Leitershofen**: Die Keytables liegen auf Kasse1 im BioBill-Ordner unter
   `Daten\update\`, die von Kasse2 als Kopie auf Kasse1 unter
   `Daten\K2\BioBill\Daten\update\`, byte-gleich im Repo (27.09.2026):
